@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../providers/AuthProvider";
 import { useCart } from "../providers/CartProvider";
-import { ShoppingBag, Store, ShieldCheck, User, LogOut, Package, ShoppingCart } from "lucide-react";
+import { ShoppingBag, Store, ShieldCheck, User, LogOut, Package, ShoppingCart, ClipboardList } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -24,15 +24,14 @@ export function Navbar() {
             <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center font-black text-lg text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
               N
             </div>
-            <div className="flex items-center">
-              <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                NEXORA
-              </span>
-            </div>
+            <span className="font-extrabold text-xl tracking-tight text-white flex items-center gap-1">
+              NEXORA
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            </span>
           </Link>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1.5">
             <Link
               href="/products"
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
@@ -44,6 +43,20 @@ export function Navbar() {
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>Marketplace</span>
             </Link>
+
+            {isAuthenticated && (
+              <Link
+                href="/orders"
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  pathname.startsWith("/orders")
+                    ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                }`}
+              >
+                <ClipboardList className="w-3.5 h-3.5" />
+                <span>My Orders</span>
+              </Link>
+            )}
 
             {isSeller && (
               <>
@@ -57,6 +70,18 @@ export function Navbar() {
                 >
                   <Store className="w-3.5 h-3.5" />
                   <span>Seller Portal</span>
+                </Link>
+
+                <Link
+                  href="/seller/orders"
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    pathname.startsWith("/seller/orders")
+                      ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                  }`}
+                >
+                  <Package className="w-3.5 h-3.5" />
+                  <span>Fulfillment</span>
                 </Link>
 
                 <Link
