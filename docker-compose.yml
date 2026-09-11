@@ -1,0 +1,102 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: nexora_mongodb
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval \"db.adminCommand('ping')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  mongo-init:
+    image: mongo:7.0
+    container_name: nexora_mongo_init
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./infra/docker/mongo-init.js:/mongo-init.js:ro
+    command: ["mongosh", "--host", "mongodb:27017", "/mongo-init.js"]
+    restart: "no"
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: nexora_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.dev
+    container_name: nexora_api
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/nexora?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
+      - CORS_ORIGIN=http://localhost:3000
+      - JWT_ACCESS_SECRET=dev_jwt_access_secret_nexora_32chars_long!
+      - JWT_REFRESH_SECRET=dev_jwt_refresh_secret_nexora_32chars_long!
+    volumes:
+      - ./apps/backend/src:/app/src
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+    container_name: nexora_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nexora_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/dev.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - api
+      - frontend
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+  redis_data:
+  nginx_logs:

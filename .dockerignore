@@ -1,0 +1,14 @@
+﻿node_modules
+npm-debug.log
+dist
+build
+.next
+out
+.git
+.gitignore
+.env
+.env.local
+coverage
+*.md
+docs
+infra/k6
