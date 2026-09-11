@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "../providers/QueryProvider";
 import { AuthProvider } from "../providers/AuthProvider";
+import { CartProvider } from "../providers/CartProvider";
+import { CartDrawer } from "../components/cart/CartDrawer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -28,7 +30,10 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased selection:bg-indigo-500 selection:text-white`}>
         <QueryProvider>
           <AuthProvider>
-            {children}
+            <CartProvider>
+              {children}
+              <CartDrawer />
+            </CartProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

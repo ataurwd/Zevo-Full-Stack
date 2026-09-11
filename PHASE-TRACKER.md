@@ -199,34 +199,36 @@
 
 ---
 
-## ⬜ PHASE 6 — Inventory Management
-**Status: NOT STARTED**
-**Prerequisite:** Phase 5 DONE
+## ✅ PHASE 6 — Inventory Management
+**Status: COMPLETE**
+**Completed:** 2026-09-11
 
-- [ ] modules/inventory/ — full CRUD
-- [ ] Auto-create inventory when variant created
-- [ ] Restock/adjustment endpoints
-- [ ] Inventory transaction logging
-- [ ] Low stock alert check function
-- [ ] BullMQ: inventory.alert queue + worker
-- [ ] Admin inventory overview
-- [ ] Frontend: seller inventory page + restock form
-- [ ] Frontend: low stock badge
+- [x] modules/inventory/ (router, controller, service, repository, types, validator)
+- [x] Auto-create inventory when variant created in ProductsService
+- [x] Restock & adjustment atomic endpoints
+- [x] Inventory transaction logging & audit trail
+- [x] Low stock alert check function
+- [x] BullMQ: inventory.alert queue dispatch
+- [x] Admin inventory overview
+- [x] Frontend: seller inventory page (`/seller/inventory`) + restock modal
+- [x] Frontend: low stock badges & audit history drawer
 
 ---
 
-## ⬜ PHASE 7 — Cart
-**Status: NOT STARTED**
-**Prerequisite:** Phase 5 DONE
+## ✅ PHASE 7 — Cart
+**Status: COMPLETE**
+**Completed:** 2026-09-11
 
-- [ ] modules/cart/ — Redis-backed cart
-- [ ] Guest session token (cookie, UUID)
-- [ ] Cart CRUD in Redis
-- [ ] Cart merge on login
-- [ ] Cart validation (prices + stock check)
-- [ ] Coupon validation endpoint
-- [ ] Cart TTL management
-- [ ] Frontend: cart page + drawer + add-to-cart
+- [x] modules/cart/ — Redis-backed cart with rolling TTL
+- [x] Guest session token (UUID header & cookie)
+- [x] Cart CRUD in Redis (add, update, remove, clear)
+- [x] Cart merge on login (`POST /cart/merge`)
+- [x] Pre-checkout cart validation (`POST /cart/validate`) — live price & stock check
+- [x] Coupon validation endpoint (`POST /cart/apply-coupon`)
+- [x] Cart TTL management (7-day guest, 30-day user rolling TTL)
+- [x] Frontend: dedicated cart page (`/cart`)
+- [x] Frontend: sliding cart drawer (`CartDrawer`) with live badge
+- [x] Frontend: wired "Add to Cart" on product pages with instant drawer feedback
 
 ---
 

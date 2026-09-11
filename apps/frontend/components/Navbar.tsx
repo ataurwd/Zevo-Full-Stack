@@ -4,11 +4,13 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../providers/AuthProvider";
-import { ShoppingBag, Store, ShieldCheck, User, LogOut, Package } from "lucide-react";
+import { useCart } from "../providers/CartProvider";
+import { ShoppingBag, Store, ShieldCheck, User, LogOut, Package, ShoppingCart } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const { itemCount, openDrawer } = useCart();
 
   const isSeller = user?.role === "SELLER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
   const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
@@ -44,17 +46,31 @@ export function Navbar() {
             </Link>
 
             {isSeller && (
-              <Link
-                href="/seller/dashboard"
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  pathname.startsWith("/seller")
-                    ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800/60"
-                }`}
-              >
-                <Store className="w-3.5 h-3.5" />
-                <span>Seller Portal</span>
-              </Link>
+              <>
+                <Link
+                  href="/seller/dashboard"
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    pathname === "/seller/dashboard"
+                      ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                  }`}
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  <span>Seller Portal</span>
+                </Link>
+
+                <Link
+                  href="/seller/inventory"
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    pathname.startsWith("/seller/inventory")
+                      ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                  }`}
+                >
+                  <Package className="w-3.5 h-3.5" />
+                  <span>Inventory</span>
+                </Link>
+              </>
             )}
 
             {isAdmin && (
@@ -75,6 +91,20 @@ export function Navbar() {
 
         {/* User / Actions */}
         <div className="flex items-center gap-3">
+          {/* Shopping Cart Drawer Trigger */}
+          <button
+            onClick={openDrawer}
+            className="relative p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-indigo-500/50 transition-colors"
+            title="Shopping Cart"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center shadow-md shadow-indigo-600/50">
+                {itemCount}
+              </span>
+            )}
+          </button>
+
           {isAuthenticated && user ? (
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex flex-col text-right">

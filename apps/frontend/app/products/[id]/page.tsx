@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "../../../components/Navbar";
+import { useCart } from "../../../providers/CartProvider";
 import {
   getProductPublicDetail,
   ProductItem,
@@ -63,11 +64,23 @@ export default function ProductDetailPage() {
     }).format(cents / 100);
   };
 
-  const handleAddToCart = () => {
-    setCartSuccess(true);
-    setTimeout(() => {
-      setCartSuccess(false);
-    }, 2500);
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    if (!product || !selectedVariant) return;
+    setIsAdding(true);
+    try {
+      await addItem(product.id, selectedVariant.id, quantity);
+      setCartSuccess(true);
+      setTimeout(() => {
+        setCartSuccess(false);
+      }, 2500);
+    } catch (err: any) {
+      alert(err.message || "Failed adding to cart");
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   if (isLoading) {

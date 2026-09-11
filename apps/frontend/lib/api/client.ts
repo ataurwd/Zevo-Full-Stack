@@ -1,4 +1,4 @@
-﻿const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
 let inMemoryAccessToken: string | null = null;
 
@@ -8,6 +8,32 @@ export function setAccessToken(token: string | null): void {
 
 export function getAccessToken(): string | null {
   return inMemoryAccessToken;
+}
+
+let inMemoryGuestCartId: string | null = null;
+
+export function getGuestCartId(): string | null {
+  if (inMemoryGuestCartId) return inMemoryGuestCartId;
+  if (typeof window !== "undefined") {
+    let stored = localStorage.getItem("nexora_guest_cart_id");
+    if (!stored) {
+      stored =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : "guest-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem("nexora_guest_cart_id", stored);
+    }
+    inMemoryGuestCartId = stored;
+    return stored;
+  }
+  return null;
+}
+
+export function clearGuestCartId(): void {
+  inMemoryGuestCartId = null;
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("nexora_guest_cart_id");
+  }
 }
 
 let isRefreshing = false;
@@ -38,6 +64,11 @@ export async function apiFetch<T = any>(
 
   if (inMemoryAccessToken) {
     headers.set("Authorization", `Bearer ${inMemoryAccessToken}`);
+  } else {
+    const guestCartId = getGuestCartId();
+    if (guestCartId) {
+      headers.set("x-guest-cart-id", guestCartId);
+    }
   }
 
   const response = await fetch(url, {
