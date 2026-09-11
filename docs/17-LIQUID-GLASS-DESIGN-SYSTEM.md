@@ -1,45 +1,46 @@
-# 17 — NEXORA Liquid Glass Design System
+# 17 — NEXORA Light Theme Liquid Glass Design System
 
 ## 1. Vision & Core Philosophy
 
-The **NEXORA Liquid Glass Design System** is an ultra-premium visual language built for next-generation multi-vendor commerce and real-time logistics. 
+The **NEXORA Liquid Glass Design System** is an ultra-premium, futuristic visual language built for next-generation multi-vendor commerce and real-time hyperlocal logistics.
 
-It combines:
-1. **Deep Void & Obsidian Canvas**: Eliminates flat white boxes in favor of rich, cinematic dark space (`#080b12` to `#0d131f`).
-2. **Organic Luminous Fluidity**: Floating ambient liquid gradient orbs (cyan, indigo, electric violet) that create depth, warmth, and life behind the interface.
-3. **Multi-Layered Frosted Translucency**: High-blur backdrops (`backdrop-blur-xl`, `backdrop-blur-2xl`) allowing colors and movement beneath to diffuse naturally.
-4. **Specular Edge Light**: Hairline luminous borders (`1px solid rgba(255, 255, 255, 0.08)` to `0.15`) with top-edge specular gleam simulating physical refractive crystal glass.
-5. **Vibrant Tactile Accents**: Neon cyan, electric indigo, radiant amber, and vivid emerald for interactive states, notifications, and logistics telemetries.
+**The system is strictly LIGHT THEME** — featuring:
+1. **Luminous Canvas**: Crisp, airy `#f8fafc` / `#ffffff` background with fine ambient grid textures.
+2. **Floating Pastel Fluidity**: Ethereal, low-opacity ambient floating orbs in soft periwinkle (`#818cf8`), cyan (`#38bdf8`), and lavender (`#c084fc`) providing gentle background motion and depth.
+3. **Multi-Layered Frosted Translucency**: High backdrop blur (`backdrop-blur-xl`, `backdrop-blur-2xl`) on semi-transparent white surfaces (`rgba(255, 255, 255, 0.82)` to `0.95`).
+4. **Specular Edge Light & Inset Highlight**: Hairline luminous borders (`1px solid rgba(226, 232, 240, 0.8)`) paired with inset pure white specular highlights (`inset 0 1px 0 0 rgba(255, 255, 255, 1)`) simulating physical refractive crystal glass.
+5. **Vibrant Royal Blue / Indigo Accents**: High-contrast, punchy royal blue buttons (`#2563eb`), cyan tags, and emerald badges for active states and logistics telemetry.
+6. **Sophisticated Typography**: Deep slate `#0f172a` for primary headings, `#334155` for body, and `#64748b` for subtle metadata.
 
 ---
 
 ## 2. Design Tokens & Color Palette
 
-### 2.1 Surfaces & Canvas
+### 2.1 Surfaces & Canvas (Light Theme)
 | Token | Hex / Value | Description |
 |---|---|---|
-| `canvas-void` | `#06080e` | Deepest ambient background |
-| `canvas-obsidian` | `#0a0e1a` | Main page background |
-| `glass-surface-subtle` | `rgba(15, 23, 42, 0.40)` | Table rows, secondary panels |
-| `glass-surface-card` | `rgba(15, 23, 42, 0.65)` | Primary cards, cards container |
-| `glass-surface-elevated`| `rgba(15, 23, 42, 0.85)` | Modals, drawers, floating navbars |
+| `canvas-background` | `#f8fafc` | Clean, luminous base canvas |
+| `canvas-surface` | `#ffffff` | Solid surface elements |
+| `glass-surface-panel` | `rgba(255, 255, 255, 0.85)` | High-blur hero panels, headers |
+| `glass-surface-card` | `rgba(255, 255, 255, 0.82)` | Primary product & metric cards |
+| `glass-surface-interactive`| `rgba(255, 255, 255, 0.96)` | Hover state on interactive cards |
 
-### 2.2 Borders & Highlights
+### 2.2 Borders & Specular Highlights
 | Token | Value | Purpose |
 |---|---|---|
-| `glass-border-subtle` | `rgba(255, 255, 255, 0.06)` | Quiet dividers and secondary borders |
-| `glass-border-standard`| `rgba(255, 255, 255, 0.12)` | Standard card and container edges |
-| `glass-border-hover` | `rgba(99, 102, 241, 0.40)` | Interactive focus/hover border |
-| `specular-edge` | `inset 0 1px 0 0 rgba(255, 255, 255, 0.15)` | Top crystal reflection highlight |
+| `glass-border-standard`| `1px solid rgba(226, 232, 240, 0.75)` | Standard card and container edges |
+| `glass-border-hover` | `1px solid rgba(59, 130, 246, 0.40)` | Interactive focus/hover border |
+| `specular-edge` | `inset 0 1px 0 0 rgba(255, 255, 255, 1)` | Top crystal reflection highlight |
+| `diffuse-shadow` | `0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 20px 40px -15px rgba(37, 99, 235, 0.06)` | Floating ambient drop shadow |
 
-### 2.3 Fluid Accents & Status Glows
-| Accent | Main Color | Glow Box Shadow |
+### 2.3 Accents & Status Tints
+| Accent | Primary Hex | Light Pill Style |
 |---|---|---|
-| **Electric Indigo** | `#6366f1` | `0 0 30px -5px rgba(99, 102, 241, 0.4)` |
-| **Cyan Aurora** | `#06b6d4` | `0 0 30px -5px rgba(6, 182, 212, 0.4)` |
-| **Neon Emerald** (Success) | `#10b981` | `0 0 30px -5px rgba(16, 185, 129, 0.4)` |
-| **Radiant Amber** (Pending) | `#f59e0b` | `0 0 30px -5px rgba(245, 158, 11, 0.4)` |
-| **Crimson Rose** (Error) | `#f43f5e` | `0 0 30px -5px rgba(244, 63, 94, 0.4)` |
+| **Royal Blue** (Primary) | `#2563eb` | `bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/25` |
+| **Sky Blue** (Telemetry) | `#0284c7` | `bg-sky-50 border-sky-200 text-sky-700` |
+| **Emerald** (Success / Stock) | `#10b981` | `bg-emerald-50 border-emerald-200 text-emerald-700` |
+| **Amber** (Pending / Warning) | `#f59e0b` | `bg-amber-50 border-amber-200 text-amber-800` |
+| **Rose** (Discount / Error) | `#ef4444` | `bg-rose-50 border-rose-200 text-rose-700` |
 
 ---
 
@@ -48,50 +49,33 @@ It combines:
 ### 3.1 Liquid Glass Cards (`.liquid-glass-card`)
 - Base styling:
   ```css
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 12px 24px -10px rgba(37, 99, 235, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 1);
+  border-radius: 1.25rem;
   ```
 - Interactive extension (`.liquid-glass-card-interactive`):
-  - On hover: translateY(-2px), border color shifts to `rgba(99, 102, 241, 0.45)`, diffuse shadow expands to `0 16px 40px -10px rgba(99, 102, 241, 0.25)`.
+  - On hover: translateY(-3px), border color shifts to `rgba(59, 130, 246, 0.4)`, shadow expands to `0 20px 35px -10px rgba(37, 99, 235, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 1)`.
 
 ### 3.2 Liquid Glass Buttons
-- **Primary Liquid**: Gradient fill (`from-indigo-600 to-indigo-500`), specular edge, hover glow (`shadow-lg shadow-indigo-600/30`), active press scale.
-- **Secondary Glass**: `bg-white/[0.05] hover:bg-white/[0.10] border border-white/[0.12] text-slate-200`.
-- **Ghost Glass**: Transparent with subtle hover wash and cyan/indigo text.
+- **Primary Liquid**: Pill button with gradient `linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)`, specular inset highlight, and diffuse royal blue drop shadow.
+- **Secondary Glass**: Pill button with `bg-white/85 hover:bg-white text-slate-800 border border-slate-300 shadow-2xs`.
+- **Ghost Glass**: Transparent with subtle hover wash and blue text.
 
-### 3.3 Liquid Glass Badges (`.liquid-badge`)
-- Pill-shaped with semi-transparent tinted glass background:
-  - `bg-emerald-500/10 border border-emerald-500/25 text-emerald-400`
-  - `bg-amber-500/10 border border-amber-500/25 text-amber-400`
-  - `bg-rose-500/10 border border-rose-500/25 text-rose-400`
-  - `bg-cyan-500/10 border border-cyan-500/25 text-cyan-400`
-- Includes a tiny radiant dot indicator (`h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse`).
-
-### 3.4 Liquid Glass Form Inputs
-- Frosted dark input (`bg-slate-950/60 border border-white/[0.10] text-white`).
-- Placeholder text in soft `text-slate-500`.
-- Focus state: `ring-2 ring-indigo-500/40 border-indigo-500/60 shadow-[0_0_15px_rgba(99,102,241,0.2)]`.
+### 3.3 Status Badges
+- Pill-shaped with light tinted pastel background:
+  - Success: `bg-emerald-50 text-emerald-700 border border-emerald-200`
+  - Pending: `bg-amber-50 text-amber-800 border border-amber-200`
+  - Critical: `bg-rose-50 text-rose-700 border border-rose-200`
+  - Info: `bg-blue-50 text-blue-700 border border-blue-200`
 
 ---
 
-## 4. UI Assembly Workflow Rule
+## 4. UI Assembly Rules
 
-Before coding ANY frontend screen or component:
-1. **Never use opaque stark white card containers (`bg-white`)** or generic flat grey borders (`border-slate-200`).
-2. **Every page must sit on the ambient Liquid Background**:
-   - The Root Layout injects `<LiquidBackground />` ensuring glowing diffused orbs behind all pages.
-3. **Use the UI Primitives in `apps/frontend/components/ui/`**:
-   - Containers: `<GlassCard>`
-   - Buttons: `<GlassButton>`
-   - Status: `<GlassBadge>`
-   - Inputs: `<GlassInput>`
-4. **Maintain visual contrast**:
-   - Primary text: `text-white` or `text-slate-100`.
-   - Secondary text: `text-slate-400` or `text-slate-300`.
-   - Brand highlights: `text-indigo-400`, `text-cyan-400`.
-5. **Smooth Micro-interactions**:
-   - Always include subtle hover transitions (`transition-all duration-200`).
+1. **Strictly Light Theme**: Never revert to dark background (`#080b12` or dark obsidian). Keep the background `#f8fafc` and text `#0f172a`.
+2. **Every screen inherits `<LiquidBackground />`** for subtle, soothing animated pastel ambient orbs.
+3. **Showcase Real Data**: Always populate rich product photography, stock counters, seller ratings, prices, and actionable buttons.
+4. **Fast Interactive Micro-Interactions**: Smooth 200ms cubic transitions, hover lifts, and real-time state synchronizations.

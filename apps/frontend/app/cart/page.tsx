@@ -82,26 +82,26 @@ export default function FullCartPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080b12] text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col selection:bg-blue-600 selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto px-6 py-10 w-full">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-6">
-          <Link href="/products" className="hover:text-white transition-colors">
+        <div className="flex items-center gap-2 text-xs text-slate-500 mb-6">
+          <Link href="/products" className="hover:text-blue-600 transition-colors">
             Marketplace
           </Link>
           <span>/</span>
-          <span className="text-slate-200">Shopping Cart</span>
+          <span className="text-slate-800 font-medium">Shopping Cart</span>
         </div>
 
         {/* Page Title */}
-        <div className="flex items-center justify-between pb-6 mb-8 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-6 mb-8 border-b border-slate-200">
           <div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Review Your Cart Items
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-600 mt-1">
               Multi-vendor items reserved in your session. Stock and prices are validated before checkout.
             </p>
           </div>
@@ -109,7 +109,7 @@ export default function FullCartPage() {
           {cart && cart.items.length > 0 && (
             <button
               onClick={() => clearCart()}
-              className="text-xs text-slate-400 hover:text-rose-400 transition-colors"
+              className="text-xs font-semibold text-slate-500 hover:text-rose-600 transition-colors"
             >
               Clear Cart
             </button>
@@ -118,12 +118,12 @@ export default function FullCartPage() {
 
         {/* Validation Issues Alert Banner */}
         {validationIssues.length > 0 && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs mb-8">
+          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs mb-8">
             <div className="flex items-center gap-2 font-bold mb-2">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
               <span>Inventory & Pricing Updates Detected:</span>
             </div>
-            <ul className="list-disc list-inside space-y-1 text-slate-300 pl-2">
+            <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
               {validationIssues.map((issue, idx) => (
                 <li key={idx}>{issue}</li>
               ))}
@@ -133,22 +133,22 @@ export default function FullCartPage() {
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24">
-            <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-3" />
-            <p className="text-sm text-slate-400">Loading your shopping cart...</p>
+            <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-3" />
+            <p className="text-sm font-semibold text-slate-500">Loading your shopping cart...</p>
           </div>
         ) : !cart || cart.items.length === 0 ? (
           /* Empty Cart State */
-          <div className="glass-card rounded-2xl border border-slate-800 p-16 text-center max-w-xl mx-auto">
-            <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-slate-500">
+          <div className="liquid-glass-card p-16 text-center max-w-xl mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-400">
               <ShoppingBag className="w-8 h-8" />
             </div>
-            <h2 className="text-lg font-bold text-white mb-1">Your cart is currently empty</h2>
-            <p className="text-xs text-slate-400 mb-6">
+            <h2 className="text-lg font-bold text-slate-800 mb-1">Your cart is currently empty</h2>
+            <p className="text-xs text-slate-500 mb-6">
               You haven&apos;t added any items to your multi-vendor cart yet.
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors shadow-lg shadow-indigo-600/30"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition-all shadow-md shadow-blue-500/25"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Explore Marketplace</span>
@@ -159,11 +159,11 @@ export default function FullCartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Items Table */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+              <div className="liquid-glass-card overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-900/80 border-b border-slate-800">
-                      <tr className="text-slate-400 uppercase tracking-wider font-semibold">
+                    <thead className="bg-slate-50/80 border-b border-slate-200">
+                      <tr className="text-slate-500 uppercase tracking-wider font-semibold">
                         <th className="py-3.5 px-4">Item Details</th>
                         <th className="py-3.5 px-4">Unit Price</th>
                         <th className="py-3.5 px-4">Quantity</th>
@@ -171,12 +171,12 @@ export default function FullCartPage() {
                         <th className="py-3.5 px-4 text-right"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-100">
                       {cart.items.map((item) => (
-                        <tr key={item.variant_id} className="hover:bg-slate-900/30 transition-colors">
+                        <tr key={item.variant_id} className="hover:bg-slate-50/50 transition-colors">
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
+                              <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
                                 {item.image_url ? (
                                   <img
                                     src={item.image_url}
@@ -184,63 +184,63 @@ export default function FullCartPage() {
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (
-                                  <Package className="w-6 h-6 text-slate-600" />
+                                  <Package className="w-6 h-6 text-slate-400" />
                                 )}
                               </div>
                               <div>
                                 <Link
                                   href={`/products/${item.product_id}`}
-                                  className="font-semibold text-white hover:text-indigo-400 transition-colors block text-sm"
+                                  className="font-bold text-slate-900 hover:text-blue-600 transition-colors block text-sm"
                                 >
                                   {item.name}
                                 </Link>
-                                <span className="text-xs text-indigo-400 block mt-0.5">
+                                <span className="text-xs text-blue-600 font-medium block mt-0.5">
                                   {item.variant_name}
                                 </span>
-                                <span className="text-[10px] text-slate-500 font-mono">
+                                <span className="text-[10px] text-slate-400 font-mono">
                                   SKU: {item.sku}
                                 </span>
                               </div>
                             </div>
                           </td>
 
-                          <td className="py-4 px-4 font-mono text-slate-200">
+                          <td className="py-4 px-4 font-mono text-slate-800 font-medium">
                             {formatCents(item.price)}
                           </td>
 
                           <td className="py-4 px-4">
-                            <div className="inline-flex items-center rounded-xl bg-slate-950 border border-slate-800 p-1">
+                            <div className="inline-flex items-center rounded-xl bg-white border border-slate-200 p-1 shadow-2xs">
                               <button
                                 onClick={() =>
                                   updateQuantity(item.variant_id, item.quantity - 1)
                                 }
                                 disabled={item.quantity <= 1}
-                                className="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white disabled:opacity-30"
+                                className="w-6 h-6 rounded flex items-center justify-center text-slate-500 hover:text-slate-900 disabled:opacity-30"
                               >
                                 <Minus className="w-3 h-3" />
                               </button>
-                              <span className="w-8 text-center font-mono text-xs font-bold text-white">
+                              <span className="w-8 text-center font-mono text-xs font-bold text-slate-900">
                                 {item.quantity}
                               </span>
                               <button
                                 onClick={() =>
                                   updateQuantity(item.variant_id, item.quantity + 1)
                                 }
-                                className="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white"
+                                className="w-6 h-6 rounded flex items-center justify-center text-slate-500 hover:text-slate-900"
                               >
                                 <Plus className="w-3 h-3" />
                               </button>
                             </div>
                           </td>
 
-                          <td className="py-4 px-4 font-mono font-bold text-white">
+                          <td className="py-4 px-4 font-mono font-bold text-slate-900">
                             {formatCents(item.price * item.quantity)}
                           </td>
 
                           <td className="py-4 px-4 text-right">
                             <button
                               onClick={() => removeItem(item.variant_id)}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                               title="Remove item"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -254,9 +254,9 @@ export default function FullCartPage() {
               </div>
 
               {/* Guarantees Note */}
-              <div className="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 flex items-center gap-3">
-                <ShieldCheck className="w-5 h-5 text-indigo-400 shrink-0" />
-                <span className="text-xs text-slate-300">
+              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 flex items-center gap-3">
+                <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
+                <span className="text-xs text-slate-700">
                   NEXORA Multi-Vendor Routing: Each vendor fulfills their portion independently with dedicated tracking numbers.
                 </span>
               </div>
@@ -264,28 +264,28 @@ export default function FullCartPage() {
 
             {/* Order Summary Sidebar */}
             <div className="space-y-6">
-              <div className="glass-card rounded-2xl border border-slate-800 p-6 space-y-5">
-                <h2 className="text-base font-bold text-white">Order Summary</h2>
+              <div className="liquid-glass-card p-6 space-y-5">
+                <h2 className="text-base font-bold text-slate-900">Order Summary</h2>
 
                 {/* Promo Code Box */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                     Promotional Coupon
                   </label>
                   {cart.coupon ? (
-                    <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-between text-xs">
+                    <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <Tag className="w-4 h-4 text-indigo-400" />
-                        <span className="font-mono font-bold text-indigo-300">
+                        <Tag className="w-4 h-4 text-blue-600" />
+                        <span className="font-mono font-bold text-blue-800">
                           {cart.coupon.code}
                         </span>
-                        <span className="text-emerald-400 font-semibold">
+                        <span className="text-blue-600 font-semibold">
                           (-{formatCents(cart.discount)})
                         </span>
                       </div>
                       <button
                         onClick={() => removeCoupon()}
-                        className="text-[11px] text-slate-400 hover:text-rose-400"
+                        className="text-[11px] font-semibold text-slate-500 hover:text-rose-600"
                       >
                         Remove
                       </button>
@@ -297,12 +297,12 @@ export default function FullCartPage() {
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         placeholder="e.g. WELCOME10"
-                        className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono uppercase text-white focus:outline-none focus:border-indigo-500"
+                        className="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono uppercase text-slate-900 focus:outline-none focus:border-blue-500 shadow-2xs"
                       />
                       <button
                         type="submit"
                         disabled={couponLoading || !couponCode.trim()}
-                        className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-xs font-semibold text-white transition-colors"
+                        className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-xs font-semibold text-white transition-colors"
                       >
                         {couponLoading ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -315,8 +315,8 @@ export default function FullCartPage() {
 
                   {couponMsg && (
                     <p
-                      className={`text-[11px] mt-1.5 ${
-                        couponMsg.type === "success" ? "text-emerald-400" : "text-rose-400"
+                      className={`text-[11px] mt-1.5 font-medium ${
+                        couponMsg.type === "success" ? "text-emerald-600" : "text-rose-500"
                       }`}
                     >
                       {couponMsg.text}
@@ -325,29 +325,29 @@ export default function FullCartPage() {
                 </div>
 
                 {/* Calculation breakdown */}
-                <div className="space-y-2 text-xs pt-3 border-t border-slate-800">
-                  <div className="flex justify-between text-slate-400">
+                <div className="space-y-2 text-xs pt-3 border-t border-slate-200">
+                  <div className="flex justify-between text-slate-600">
                     <span>Items Subtotal</span>
-                    <span className="font-mono text-slate-200">{formatCents(cart.subtotal)}</span>
+                    <span className="font-mono text-slate-900 font-medium">{formatCents(cart.subtotal)}</span>
                   </div>
 
                   {cart.discount > 0 && (
-                    <div className="flex justify-between text-emerald-400">
+                    <div className="flex justify-between text-emerald-600 font-semibold">
                       <span>Discount Savings</span>
-                      <span className="font-mono font-semibold">
+                      <span className="font-mono">
                         -{formatCents(cart.discount)}
                       </span>
                     </div>
                   )}
 
-                  <div className="flex justify-between text-slate-400">
+                  <div className="flex justify-between text-slate-600">
                     <span>Estimated Shipping</span>
-                    <span className="text-slate-300">Calculated at Checkout</span>
+                    <span className="text-slate-800 font-medium">Calculated at Checkout</span>
                   </div>
 
-                  <div className="flex justify-between text-white font-bold text-base pt-3 border-t border-slate-800">
+                  <div className="flex justify-between text-slate-900 font-bold text-base pt-3 border-t border-slate-200">
                     <span>Subtotal Due</span>
-                    <span className="font-mono text-lg text-white">{formatCents(cart.total)}</span>
+                    <span className="font-mono text-xl text-slate-900 font-black">{formatCents(cart.total)}</span>
                   </div>
                 </div>
 
@@ -356,7 +356,7 @@ export default function FullCartPage() {
                   <button
                     onClick={handlePreCheckout}
                     disabled={isValidating}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-xs font-bold text-white transition-colors shadow-lg shadow-indigo-600/30"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-xs font-bold text-white transition-all shadow-md shadow-blue-500/25 hover:shadow-blue-500/35"
                   >
                     {isValidating ? (
                       <>

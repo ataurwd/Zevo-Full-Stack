@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -34,36 +34,32 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-[#080b12] relative overflow-hidden">
-      {/* Glow */}
-      <div className="absolute top-1/4 right-1/3 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none" />
-
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-[#f8fafc] relative overflow-hidden">
       <div className="w-full max-w-lg z-10">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-indigo-500/25">
+          <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
+            <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-xl text-white shadow-md shadow-blue-500/25">
               N
             </div>
-            <span className="font-bold text-2xl tracking-tight text-white">NEXORA</span>
+            <span className="font-extrabold text-2xl tracking-tight text-slate-900">NEXORA</span>
           </Link>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Create an Account</h1>
-          <p className="text-xs text-slate-400 mt-1">Join as a Customer, Vendor Store, or Delivery Rider</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Create an Account</h1>
+          <p className="text-xs text-slate-500 mt-1">Join as a Customer, Vendor Store, or Delivery Rider</p>
         </div>
 
-        <div className="glass-card rounded-2xl p-8 border border-slate-800">
+        <div className="liquid-glass-card p-8">
           {success ? (
             <div className="text-center py-6">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h2 className="text-lg font-bold text-white mb-2">Check Your Inbox</h2>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto mb-6 leading-relaxed">
-                We sent a verification link to <span className="text-indigo-400 font-medium">{formData.email}</span>. Click the link to activate your account.
+              <h2 className="text-lg font-bold text-slate-900 mb-2">Check Your Inbox</h2>
+              <p className="text-xs text-slate-600 max-w-sm mx-auto mb-6 leading-relaxed">
+                We sent a verification link to <span className="text-blue-600 font-bold">{formData.email}</span>. Click the link to activate your account.
               </p>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors shadow-lg shadow-indigo-600/30"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-md shadow-blue-500/25"
               >
                 <span>Proceed to Sign In</span>
                 <ArrowRight className="w-4 h-4" />
@@ -72,7 +68,7 @@ export default function RegisterPage() {
           ) : (
             <>
               {error && (
-                <div className="mb-6 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+                <div className="mb-6 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{error}</span>
                 </div>
@@ -81,7 +77,7 @@ export default function RegisterPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Role selection tab */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Select Account Type</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Select Account Type</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
                       { id: "CUSTOMER", label: "Customer" },
@@ -92,10 +88,10 @@ export default function RegisterPage() {
                         key={role.id}
                         type="button"
                         onClick={() => setFormData({ ...formData, role: role.id as any })}
-                        className={`py-2 px-3 rounded-xl text-xs font-medium border transition-all ${
+                        className={`py-2 px-3 rounded-full text-xs font-bold border transition-all ${
                           formData.role === role.id
-                            ? "bg-indigo-600/20 border-indigo-500 text-white"
-                            : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200"
+                            ? "bg-blue-50 border-blue-500 text-blue-700 shadow-2xs"
+                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                         }`}
                       >
                         {role.label}
@@ -106,11 +102,11 @@ export default function RegisterPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="reg-first-name">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-first-name">
                       First Name
                     </label>
                     <div className="relative">
-                      <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                       <input
                         id="reg-first-name"
                         type="text"
@@ -118,13 +114,13 @@ export default function RegisterPage() {
                         value={formData.first_name}
                         onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                         placeholder="John"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="reg-last-name">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-last-name">
                       Last Name
                     </label>
                     <input
@@ -134,17 +130,17 @@ export default function RegisterPage() {
                       value={formData.last_name}
                       onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                       placeholder="Doe"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="reg-email">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-email">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       id="reg-email"
                       type="email"
@@ -152,34 +148,34 @@ export default function RegisterPage() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="name@example.com"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="reg-phone">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-phone">
                     Phone Number (Optional)
                   </label>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       id="reg-phone"
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+1234567890"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="reg-password">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5" htmlFor="reg-password">
                     Password (Min 8 chars, 1 uppercase, 1 lowercase, 1 number)
                   </label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     <input
                       id="reg-password"
                       type="password"
@@ -187,7 +183,7 @@ export default function RegisterPage() {
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs transition-all"
                     />
                   </div>
                 </div>
@@ -196,7 +192,7 @@ export default function RegisterPage() {
                   id="reg-submit-btn"
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 disabled:opacity-50"
+                  className="w-full mt-2 py-3.5 px-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-500/25 hover:shadow-blue-500/35 disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -212,10 +208,10 @@ export default function RegisterPage() {
                 </button>
               </form>
 
-              <div className="mt-6 pt-6 border-t border-slate-800 text-center">
-                <p className="text-xs text-slate-400">
+              <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+                <p className="text-xs text-slate-500">
                   Already have an account?{" "}
-                  <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                  <Link href="/login" className="text-blue-600 hover:text-blue-700 font-bold">
                     Sign In
                   </Link>
                 </p>

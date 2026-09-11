@@ -5,20 +5,20 @@ import React from "react";
 export function LiquidBackground() {
   return (
     <div className="liquid-mesh-container" aria-hidden="true">
-      {/* Deep Obsidian base gradient */}
-      <div className="absolute inset-0 bg-[#070a12]/95" />
+      {/* Soft light base canvas */}
+      <div className="absolute inset-0 bg-[#f8fafc]/90" />
 
-      {/* Floating glowing orbs */}
+      {/* Floating glowing pastel orbs */}
       <div className="liquid-orb liquid-orb-1" />
       <div className="liquid-orb liquid-orb-2" />
       <div className="liquid-orb liquid-orb-3" />
 
-      {/* Fine-grained ambient noise texture / grid overlay */}
+      {/* Fine-grained ambient grid overlay */}
       <div
-        className="absolute inset-0 opacity-[0.02] pointer-events-none"
+        className="absolute inset-0 opacity-[0.035] pointer-events-none"
         style={{
-          backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
-          backgroundSize: "32px 32px",
+          backgroundImage: `radial-gradient(#0f172a 1px, transparent 1px)`,
+          backgroundSize: "28px 28px",
         }}
       />
     </div>
