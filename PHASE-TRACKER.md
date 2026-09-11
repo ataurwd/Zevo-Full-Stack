@@ -95,67 +95,67 @@
 
 ---
 
-## ⬜ PHASE 2 — Authentication
-**Status: NOT STARTED**
-**Prerequisite:** Phase 1 DONE
+## ✅ PHASE 2 — Authentication
+**Status: COMPLETE**
+**Completed:** 2026-09-11
 
 ### Backend
-- [ ] modules/auth/auth.router.ts
-- [ ] modules/auth/auth.controller.ts
-- [ ] modules/auth/auth.service.ts
-- [ ] modules/auth/auth.repository.ts
-- [ ] modules/auth/auth.validator.ts
-- [ ] modules/auth/auth.types.ts
-- [ ] modules/users/users.repository.ts
-- [ ] shared/utils/jwt.ts — generateAccessToken, generateRefreshToken, verifyToken
-- [ ] shared/middleware/authenticate.ts
-- [ ] shared/middleware/authorize.ts
-- [ ] Email verification token (Redis)
-- [ ] Password reset token (Redis)
-- [ ] Rate limiting middleware (Redis sliding window)
-- [ ] BullMQ queues.ts setup
-- [ ] email queue + worker (Resend)
-- [ ] Email templates: verify, reset-password
-- [ ] Audit log service
-- [ ] Apply rate limiter to auth routes
+- [x] modules/auth/auth.router.ts
+- [x] modules/auth/auth.controller.ts
+- [x] modules/auth/auth.service.ts
+- [x] modules/auth/auth.repository.ts
+- [x] modules/auth/auth.validator.ts
+- [x] modules/auth/auth.types.ts
+- [x] modules/users/users.repository.ts
+- [x] shared/utils/jwt.ts — generateAccessToken, generateRefreshToken, verifyToken
+- [x] shared/middleware/authenticate.ts
+- [x] shared/middleware/authorize.ts
+- [x] Email verification token (Redis & Mongo)
+- [x] Password reset token (Redis & Mongo)
+- [x] Rate limiting middleware (Redis sliding window)
+- [x] BullMQ queues.ts setup
+- [x] email queue + worker (Resend/Dev Logger)
+- [x] Email templates: verify, reset-password
+- [x] Audit log service
+- [x] Apply rate limiter to auth routes
 
 ### Frontend
-- [ ] /login page
-- [ ] /register page
-- [ ] /verify-email page
-- [ ] /forgot-password page
-- [ ] /reset-password page
-- [ ] AuthProvider.tsx (in-memory access token)
-- [ ] useAuth hook
-- [ ] lib/api/auth.ts (API client)
-- [ ] Axios interceptor (auto-refresh on 401)
-- [ ] Protected route HOC/middleware
-- [ ] Role-based redirect on login
+- [x] /login page
+- [x] /register page
+- [x] /verify-email page
+- [x] /forgot-password page
+- [x] /reset-password page
+- [x] AuthProvider.tsx (in-memory access token)
+- [x] useAuth hook
+- [x] lib/api/auth.ts (API client)
+- [x] Axios/fetch interceptor (auto-refresh on 401)
+- [x] Protected route HOC/middleware
+- [x] Role-based redirect on login
 
 ### Tests
-- [ ] Unit: JWT generate/verify
-- [ ] Unit: bcrypt hash/compare
-- [ ] Integration: POST /auth/register (success + duplicate)
-- [ ] Integration: POST /auth/login (success + wrong password)
-- [ ] Integration: POST /auth/refresh
-- [ ] Integration: POST /auth/logout (token blacklisted)
-- [ ] Integration: rate limit after 10 failed logins
+- [x] Unit: JWT generate/verify
+- [x] Unit: bcrypt hash/compare
+- [x] Integration: POST /auth/register (success + duplicate)
+- [x] Integration: POST /auth/login (success + wrong password)
+- [x] Integration: POST /auth/refresh
+- [x] Integration: POST /auth/logout (token blacklisted)
+- [x] Integration: rate limit after 10 failed logins
 
 ---
 
-## ⬜ PHASE 3 — User Profiles & Addresses
-**Status: NOT STARTED**
-**Prerequisite:** Phase 2 DONE
+## ✅ PHASE 3 — User Profiles & Addresses
+**Status: COMPLETE**
+**Completed:** 2026-09-11
 
-- [ ] modules/users/users.router.ts
-- [ ] modules/users/users.controller.ts
-- [ ] modules/users/users.service.ts
-- [ ] infrastructure/storage/cloudinary.ts
-- [ ] Avatar upload endpoint
-- [ ] Address CRUD endpoints
-- [ ] Frontend: Profile page
-- [ ] Frontend: Address book
-- [ ] Frontend: Avatar upload
+- [x] modules/users/users.router.ts
+- [x] modules/users/users.controller.ts
+- [x] modules/users/users.service.ts
+- [x] infrastructure/storage/upload.ts (Multer / local & Cloudinary fallback)
+- [x] Avatar upload endpoint
+- [x] Address CRUD endpoints
+- [x] Frontend: Profile page
+- [x] Frontend: Address book
+- [x] Frontend: Avatar upload
 
 ---
 
