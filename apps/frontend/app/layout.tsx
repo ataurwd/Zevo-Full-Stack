@@ -5,6 +5,7 @@ import { QueryProvider } from "../providers/QueryProvider";
 import { AuthProvider } from "../providers/AuthProvider";
 import { CartProvider } from "../providers/CartProvider";
 import { CartDrawer } from "../components/cart/CartDrawer";
+import { LiquidBackground } from "../components/ui/LiquidBackground";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -27,11 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} antialiased selection:bg-indigo-500 selection:text-white`}>
+      <body className={`${inter.variable} antialiased selection:bg-indigo-500 selection:text-white bg-[#070a12] text-slate-100 min-h-screen relative`}>
+        <LiquidBackground />
         <QueryProvider>
           <AuthProvider>
             <CartProvider>
-              {children}
+              <div className="relative z-10 min-h-screen flex flex-col">
+                {children}
+              </div>
               <CartDrawer />
             </CartProvider>
           </AuthProvider>

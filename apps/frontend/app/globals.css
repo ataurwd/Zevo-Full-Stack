@@ -1,52 +1,243 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #090d16;
+  --background: #070a12;
   --foreground: #f8fafc;
-  --surface: #0f172a;
-  --surface-border: #1e293b;
+  --surface: #0e1424;
+  --surface-border: rgba(255, 255, 255, 0.08);
   --primary: #6366f1;
   --primary-hover: #4f46e5;
-  --accent: #10b981;
+  --accent: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #f43f5e;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  position: relative;
 }
 
-/* Glassmorphic utilities */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+/* ==========================================================================
+   LIQUID GLASS DESIGN SYSTEM UTILITIES
+   ========================================================================== */
+
+/* 1. Ambient Background Layer */
+.liquid-mesh-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.liquid-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.liquid-orb-1 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+  top: -10%;
+  left: 15%;
+  animation: liquid-float-1 18s ease-in-out infinite alternate;
+}
+
+.liquid-orb-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%);
+  top: 30%;
+  right: -5%;
+  animation: liquid-float-2 22s ease-in-out infinite alternate;
+}
+
+.liquid-orb-3 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #a855f7 0%, rgba(168, 85, 247, 0) 70%);
+  bottom: -10%;
+  left: 20%;
+  animation: liquid-float-3 20s ease-in-out infinite alternate;
+}
+
+@keyframes liquid-float-1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, 40px) scale(1.08); }
+  100% { transform: translate(-30px, 60px) scale(0.95); }
+}
+
+@keyframes liquid-float-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, -60px) scale(1.1); }
+  100% { transform: translate(40px, -30px) scale(0.92); }
+}
+
+@keyframes liquid-float-3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -40px) scale(1.05); }
+  100% { transform: translate(-40px, -20px) scale(0.96); }
+}
+
+/* 2. Glass Surfaces */
+.liquid-glass-panel {
+  background: rgba(13, 19, 33, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.liquid-glass-card {
+  background: rgba(15, 23, 42, 0.60);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-card {
-  background: rgba(30, 41, 59, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.25s ease-in-out;
+.liquid-glass-card-interactive {
+  background: rgba(15, 23, 42, 0.60);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-card:hover {
-  border-color: rgba(99, 102, 241, 0.4);
+.liquid-glass-card-interactive:hover {
+  background: rgba(18, 27, 49, 0.75);
+  border-color: rgba(99, 102, 241, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 16px 36px -10px rgba(99, 102, 241, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
-/* Glow effects */
-.glow-primary {
-  box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.5);
+/* 3. Liquid Glass Controls */
+.liquid-glass-input {
+  background: rgba(9, 13, 24, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.glow-emerald {
-  box-shadow: 0 0 30px -8px rgba(16, 185, 129, 0.5);
+.liquid-glass-input:focus {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(12, 17, 32, 0.85);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+.liquid-glass-input::placeholder {
+  color: #64748b;
+}
+
+/* 4. Liquid Glass Buttons */
+.liquid-btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-btn-primary:hover {
+  background: linear-gradient(135deg, #6d70ff 0%, #584ff5 100%);
+  box-shadow: 0 6px 25px 0px rgba(99, 102, 241, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.liquid-btn-primary:active {
+  transform: translateY(0);
+}
+
+.liquid-btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.liquid-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+/* 5. Liquid Glass Status Pills */
+.liquid-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+}
+
+.liquid-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+.liquid-badge-rose {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: #fb7185;
+}
+
+.liquid-badge-cyan {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: #38bdf8;
+}
+
+.liquid-badge-indigo {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #a5b4fc;
+}
+
+/* Custom crystal glass scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(8, 11, 18, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
 }

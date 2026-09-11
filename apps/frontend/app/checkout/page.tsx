@@ -7,7 +7,6 @@ import {
   MapPin,
   CreditCard,
   Lock,
-  CheckCircle,
   Plus,
   ArrowRight,
   ShieldCheck,
@@ -15,11 +14,13 @@ import {
   AlertCircle,
   ChevronRight,
   Truck,
+  CheckCircle2,
 } from "lucide-react";
 import { useCart } from "@/providers/CartProvider";
 import { getAddresses, createAddress, Address, CreateAddressPayload } from "@/lib/api/users";
 import { createOrder } from "@/lib/api/orders";
 import { getAccessToken } from "@/lib/api/client";
+import { GlassCard, GlassButton, GlassInput, GlassBadge } from "@/components/ui";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -133,7 +134,7 @@ export default function CheckoutPage() {
   if (isLoading || cartLoading || !cart) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
       </div>
     );
   }
@@ -146,381 +147,336 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Breadcrumb */}
-      <nav className="flex items-center text-sm font-medium text-slate-500 mb-8 space-x-2">
-        <Link href="/cart" className="hover:text-indigo-600 transition">
+      <nav className="flex items-center text-xs font-semibold text-slate-400 mb-8 space-x-2">
+        <Link href="/cart" className="hover:text-indigo-400 transition">
           Cart
         </Link>
-        <ChevronRight className="w-4 h-4" />
-        <span className="text-slate-900 font-semibold">Checkout</span>
+        <ChevronRight className="w-3.5 h-3.5" />
+        <span className="text-white">Checkout</span>
       </nav>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Checkout</h1>
-        <p className="text-slate-600 mt-1">
-          Review your order and finalize delivery & payment details.
+        <div className="flex items-center gap-2.5 mb-2">
+          <GlassBadge variant="cyan">Liquid Glass Checkout</GlassBadge>
+          <span className="text-xs text-slate-400">Escrow Protected</span>
+        </div>
+        <h1 className="text-3xl font-black text-white tracking-tight">Finalize Your Order</h1>
+        <p className="text-slate-400 text-sm mt-1">
+          Review items, select shipping destination, and authorize payment securely.
         </p>
       </div>
 
       {errorMsg && (
-        <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3 text-rose-800 text-sm">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
+        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-sm flex items-center gap-3 backdrop-blur-md">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-400" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Delivery & Payment Details */}
         <div className="lg:col-span-7 space-y-8">
           {/* Step 1: Shipping Address */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
+          <GlassCard className="p-6 sm:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold text-sm">
+                <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 font-black text-sm border border-indigo-500/30">
                   1
                 </span>
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-indigo-600" />
-                  Shipping Address
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-indigo-400" />
+                  Shipping Destination
                 </h2>
               </div>
               {!isAddingAddress && (
                 <button
                   type="button"
                   onClick={() => setIsAddingAddress(true)}
-                  className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition"
+                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition"
                 >
-                  <Plus className="w-4 h-4" /> Add Address
+                  <Plus className="w-3.5 h-3.5" /> New Address
                 </button>
               )}
             </div>
 
             {isAddingAddress ? (
-              <form onSubmit={handleCreateAddress} className="space-y-4 bg-slate-50/70 p-5 rounded-xl border border-slate-200">
-                <h3 className="font-semibold text-slate-800 text-sm">New Delivery Address</h3>
+              <form
+                onSubmit={handleCreateAddress}
+                className="space-y-4 p-5 rounded-xl bg-slate-950/50 border border-white/[0.08] backdrop-blur-md"
+              >
+                <h3 className="font-bold text-white text-xs uppercase tracking-wider">
+                  Add Delivery Address
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">
-                      Recipient Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newAddr.recipient_name}
-                      onChange={(e) => setNewAddr({ ...newAddr, recipient_name: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newAddr.phone}
-                      onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Street Address (Line 1) *
-                  </label>
-                  <input
-                    type="text"
+                  <GlassInput
+                    label="Recipient Full Name *"
                     required
-                    value={newAddr.line1}
-                    onChange={(e) => setNewAddr({ ...newAddr, line1: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                    value={newAddr.recipient_name}
+                    onChange={(e) => setNewAddr({ ...newAddr, recipient_name: e.target.value })}
+                  />
+                  <GlassInput
+                    label="Phone Number *"
+                    required
+                    value={newAddr.phone}
+                    onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })}
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Apartment, suite, unit (optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={newAddr.line2 || ""}
-                    onChange={(e) => setNewAddr({ ...newAddr, line2: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  />
-                </div>
+                <GlassInput
+                  label="Street Address (Line 1) *"
+                  required
+                  value={newAddr.line1}
+                  onChange={(e) => setNewAddr({ ...newAddr, line1: e.target.value })}
+                />
+
+                <GlassInput
+                  label="Apartment, suite, unit (optional)"
+                  value={newAddr.line2 || ""}
+                  onChange={(e) => setNewAddr({ ...newAddr, line2: e.target.value })}
+                />
 
                 <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">City *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newAddr.city}
-                      onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">State *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newAddr.state}
-                      onChange={(e) => setNewAddr({ ...newAddr, state: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Postal Code *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newAddr.postal_code}
-                      onChange={(e) => setNewAddr({ ...newAddr, postal_code: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                    />
-                  </div>
+                  <GlassInput
+                    label="City *"
+                    required
+                    value={newAddr.city}
+                    onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })}
+                  />
+                  <GlassInput
+                    label="State *"
+                    required
+                    value={newAddr.state}
+                    onChange={(e) => setNewAddr({ ...newAddr, state: e.target.value })}
+                  />
+                  <GlassInput
+                    label="Postal Code *"
+                    required
+                    value={newAddr.postal_code}
+                    onChange={(e) => setNewAddr({ ...newAddr, postal_code: e.target.value })}
+                  />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingAddress(false)}
-                    className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800"
+                    className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition"
                   >
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm"
-                  >
+                  <GlassButton type="submit" size="sm">
                     Save Address
-                  </button>
+                  </GlassButton>
                 </div>
               </form>
             ) : addresses.length === 0 ? (
               <div className="text-center py-6">
-                <p className="text-slate-500 text-sm">No saved addresses found.</p>
-                <button
+                <p className="text-slate-400 text-sm">No saved addresses found.</p>
+                <GlassButton
                   type="button"
+                  size="sm"
+                  variant="secondary"
                   onClick={() => setIsAddingAddress(true)}
-                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                  className="mt-3"
+                  leftIcon={<Plus className="w-3.5 h-3.5" />}
                 >
-                  <Plus className="w-4 h-4" /> Add your first address
-                </button>
+                  Add your first address
+                </GlassButton>
               </div>
             ) : (
               <div className="space-y-3">
-                {addresses.map((addr) => (
-                  <label
-                    key={addr.id}
-                    className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition ${
-                      selectedAddressId === addr.id
-                        ? "border-indigo-600 bg-indigo-50/40 ring-1 ring-indigo-600"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="shipping_address"
-                      checked={selectedAddressId === addr.id}
-                      onChange={() => setSelectedAddressId(addr.id)}
-                      className="mt-1 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <div className="flex-1 text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">{addr.recipient_name}</span>
-                        {addr.is_default && (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600">
-                            Default
+                {addresses.map((addr) => {
+                  const isSelected = selectedAddressId === addr.id;
+
+                  return (
+                    <label
+                      key={addr.id}
+                      className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                        isSelected
+                          ? "bg-indigo-950/40 border-indigo-500/60 shadow-[0_0_20px_rgba(99,102,241,0.2)] ring-1 ring-indigo-500/50"
+                          : "bg-slate-950/30 border-white/[0.06] hover:border-white/[0.12]"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="shipping_address"
+                        checked={isSelected}
+                        onChange={() => setSelectedAddressId(addr.id)}
+                        className="mt-1 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900"
+                      />
+                      <div className="flex-1 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white text-sm">
+                            {addr.recipient_name}
                           </span>
-                        )}
+                          {addr.is_default && (
+                            <GlassBadge variant="cyan" dot={false} className="py-0.5 px-2 text-[10px]">
+                              Default
+                            </GlassBadge>
+                          )}
+                        </div>
+                        <p className="text-slate-300 mt-1">
+                          {addr.line1}
+                          {addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state}{" "}
+                          {addr.postal_code}, {addr.country}
+                        </p>
+                        <p className="text-slate-500 text-[11px] mt-1">Phone: {addr.phone}</p>
                       </div>
-                      <p className="text-slate-600 mt-1">
-                        {addr.line1}
-                        {addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state}{" "}
-                        {addr.postal_code}, {addr.country}
-                      </p>
-                      <p className="text-slate-500 text-xs mt-1">Phone: {addr.phone}</p>
-                    </div>
-                  </label>
-                ))}
+                    </label>
+                  );
+                })}
               </div>
             )}
 
-            {/* Delivery instructions */}
-            <div className="mt-6 pt-6 border-t border-slate-100">
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Delivery Instructions or Notes (Optional)
+            {/* Delivery Instructions */}
+            <div className="mt-6 pt-6 border-t border-white/[0.06]">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                Delivery Instructions (Optional)
               </label>
               <textarea
                 rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g., Gate code #1234, leave in package locker"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                placeholder="Gate code, door drop preferences, etc."
+                className="liquid-glass-input w-full"
               />
             </div>
-          </div>
+          </GlassCard>
 
           {/* Step 2: Payment Method */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8">
+          <GlassCard className="p-6 sm:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold text-sm">
+                <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 font-black text-sm border border-indigo-500/30">
                   2
                 </span>
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-indigo-600" />
-                  Payment Method
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-indigo-400" />
+                  Stripe Escrow Payment
                 </h2>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium bg-emerald-50 px-2.5 py-1 rounded-full">
-                <Lock className="w-3.5 h-3.5" /> 256-Bit Encrypted
-              </div>
+              <GlassBadge variant="emerald">
+                <Lock className="w-3 h-3" /> 256-Bit Encrypted
+              </GlassBadge>
             </div>
 
-            {/* Stripe Card Integration Form */}
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Cardholder Name
-                </label>
-                <input
-                  type="text"
-                  value={cardHolder}
-                  onChange={(e) => setCardHolder(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              <GlassInput
+                label="Cardholder Full Name"
+                value={cardHolder}
+                onChange={(e) => setCardHolder(e.target.value)}
+              />
+
+              <GlassInput
+                label="Card Number"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                leftIcon={<CreditCard className="w-4 h-4" />}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <GlassInput
+                  label="Expiration Date"
+                  value={cardExpiry}
+                  onChange={(e) => setCardExpiry(e.target.value)}
+                  placeholder="MM/YY"
+                />
+                <GlassInput
+                  label="Security CVC"
+                  value={cardCvc}
+                  onChange={(e) => setCardCvc(e.target.value)}
+                  placeholder="123"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Card Number</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    className="w-full px-3 py-2.5 pl-10 rounded-lg border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  />
-                  <CreditCard className="w-5 h-5 text-slate-400 absolute left-3 top-3" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">Expiration</label>
-                  <input
-                    type="text"
-                    value={cardExpiry}
-                    onChange={(e) => setCardExpiry(e.target.value)}
-                    placeholder="MM/YY"
-                    className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">CVC / CVV</label>
-                  <input
-                    type="text"
-                    value={cardCvc}
-                    onChange={(e) => setCardCvc(e.target.value)}
-                    placeholder="123"
-                    className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-2 text-xs text-slate-500">
-                <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                <span>Powered by Stripe. Payment held securely in escrow until order delivery.</span>
+              <div className="flex items-center gap-2 pt-2 text-xs text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                <span>
+                  Funds remain safely locked in escrow until your delivery is fulfilled and confirmed.
+                </span>
               </div>
             </div>
-          </div>
+          </GlassCard>
         </div>
 
         {/* Right Column: Order Summary */}
         <div className="lg:col-span-5">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 sticky top-24">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-indigo-600" />
+          <GlassCard className="p-6 sm:p-8 sticky top-24">
+            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-indigo-400" />
               Order Summary ({cart.item_count} items)
             </h2>
 
-            {/* Item list preview */}
-            <div className="space-y-4 max-h-64 overflow-y-auto pr-2 divide-y divide-slate-100">
+            {/* Items list */}
+            <div className="space-y-3 max-h-64 overflow-y-auto pr-1 divide-y divide-white/[0.05]">
               {cart.items.map((item) => (
                 <div key={item.variant_id} className="pt-3 first:pt-0 flex items-center gap-3">
-                  <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-slate-950/80 border border-white/[0.08] overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {item.image_url ? (
                       <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
-                      <ShoppingBag className="w-5 h-5 text-slate-400" />
+                      <ShoppingBag className="w-4 h-4 text-slate-500" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-slate-900 truncate">{item.name}</h4>
-                    <p className="text-xs text-slate-500 truncate">
+                    <h4 className="text-xs font-bold text-white truncate">{item.name}</h4>
+                    <p className="text-[11px] text-slate-400 truncate">
                       {item.variant_name} × {item.quantity}
                     </p>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">
+                  <span className="text-xs font-bold text-indigo-300">
                     ${((item.price * item.quantity) / 100).toFixed(2)}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* Calculations */}
-            <div className="mt-6 pt-6 border-t border-slate-200 space-y-3 text-sm">
-              <div className="flex justify-between text-slate-600">
+            {/* Cost Breakdown */}
+            <div className="mt-6 pt-6 border-t border-white/[0.08] space-y-3 text-xs">
+              <div className="flex justify-between text-slate-300">
                 <span>Items Subtotal</span>
-                <span>${subtotalDollars}</span>
+                <span className="font-semibold text-white">${subtotalDollars}</span>
               </div>
 
               {cart.discount > 0 && (
-                <div className="flex justify-between text-emerald-600 font-medium">
-                  <span>Coupon ({cart.coupon?.code})</span>
+                <div className="flex justify-between text-emerald-400 font-semibold">
+                  <span>Coupon Discount ({cart.coupon?.code})</span>
                   <span>-${discountDollars}</span>
                 </div>
               )}
 
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-slate-300">
                 <span className="flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-slate-400" /> Flat Delivery Fee
+                  <Truck className="w-3.5 h-3.5 text-slate-400" /> Flat Delivery Fee
                 </span>
-                <span>${deliveryFee.toFixed(2)}</span>
+                <span className="font-semibold text-white">${deliveryFee.toFixed(2)}</span>
               </div>
 
-              <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
-                <span className="text-base font-bold text-slate-900">Total Amount</span>
-                <span className="text-2xl font-extrabold text-indigo-600">${grandTotal}</span>
+              <div className="pt-4 border-t border-white/[0.08] flex justify-between items-baseline">
+                <span className="text-sm font-bold text-slate-300">Grand Total</span>
+                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-300">
+                  ${grandTotal}
+                </span>
               </div>
             </div>
 
-            {/* Action button */}
-            <button
+            {/* Place Order CTA */}
+            <GlassButton
               type="button"
-              disabled={isSubmitting || cart.items.length === 0}
+              size="lg"
+              isLoading={isSubmitting}
+              disabled={cart.items.length === 0}
               onClick={handlePlaceOrder}
-              className="mt-8 w-full py-3.5 px-6 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 transition"
+              className="mt-8 w-full"
+              rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Authorizing Payment...</span>
-                </>
-              ) : (
-                <>
-                  <span>Place Order & Pay (${grandTotal})</span>
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
+              Authorize & Place Order (${grandTotal})
+            </GlassButton>
 
-            <p className="text-[11px] text-slate-400 text-center mt-4">
-              By clicking Place Order, you authorize the charge and agree to NEXORA Terms of Service.
+            <p className="text-[10px] text-slate-500 text-center mt-4">
+              NEXORA Secure Multi-Vendor Checkout • Stripe Connect Verified
             </p>
-          </div>
+          </GlassCard>
         </div>
       </div>
     </div>
