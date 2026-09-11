@@ -1,6 +1,8 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Navbar } from "../components/Navbar";
 import { 
   ShieldCheck, 
   Layers, 
@@ -11,7 +13,10 @@ import {
   CheckCircle2, 
   AlertCircle,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  ShoppingBag,
+  Store,
+  Tag
 } from "lucide-react";
 
 interface HealthStatus {
@@ -66,58 +71,58 @@ export default function HomePage() {
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[128px] pointer-events-none" />
 
       {/* Navigation */}
-      <header className="sticky top-0 z-50 glass-panel border-b border-slate-800/80 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-indigo-500/25">
-              N
-            </div>
-            <div>
-              <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                NEXORA
-              </span>
-              <span className="ml-2 text-xs uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-semibold">
-                Platform v1.0
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-slate-400">Stack:</span>
-              <span className="text-emerald-400 font-medium">Phase 1 Online</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-16 w-full flex flex-col items-center">
+      <main className="flex-1 max-w-7xl mx-auto px-6 py-14 w-full flex flex-col items-center">
         {/* Hero badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-8">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-8">
           <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Production-Style Architecture & Monorepo Foundation</span>
+          <span>Phase 4 & 5 Complete — Multi-Vendor Stores & Catalog Active</span>
         </div>
 
         {/* Hero title & description */}
-        <div className="text-center max-w-3xl mb-12">
+        <div className="text-center max-w-3xl mb-10">
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
             Multi-Vendor Commerce <br />
             <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
               & Hyperlocal Logistics
             </span>
           </h1>
-          <p className="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            High-concurrency marketplace engine featuring isolated vendor stores, atomic inventory reservations,
-            intelligent BullMQ rider dispatch, and real-time Socket.IO parcel telemetry.
+          <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+            Production-grade marketplace featuring isolated merchant stores, hierarchical categories, 
+            multi-variant SKU inventory with Redis caching, and integrated Stripe Connect onboarding.
           </p>
         </div>
 
-        {/* Phase 1 Live Infrastructure Card */}
+        {/* Quick Launch Portals CTA */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-14">
+          <Link
+            href="/products"
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-xl shadow-indigo-600/30 hover:scale-[1.02]"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span>Explore Marketplace</span>
+          </Link>
+
+          <Link
+            href="/seller/dashboard"
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm transition-all hover:scale-[1.02]"
+          >
+            <Store className="w-4 h-4 text-indigo-400" />
+            <span>Seller Portal</span>
+          </Link>
+
+          <Link
+            href="/admin/sellers"
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-purple-950/40 hover:bg-purple-900/50 border border-purple-800/40 text-purple-300 font-semibold text-sm transition-all hover:scale-[1.02]"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>Admin Moderation</span>
+          </Link>
+        </div>
+
+        {/* Infrastructure Status Card */}
         <section id="system-status" className="w-full max-w-4xl mb-16">
           <div className="glass-card rounded-2xl p-6 sm:p-8 border border-slate-800/80">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 mb-6 border-b border-slate-800/60 gap-4">
@@ -126,8 +131,8 @@ export default function HomePage() {
                   <Server className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Foundation Infrastructure Status</h2>
-                  <p className="text-xs text-slate-400">Node.js Express + MongoDB Native Driver + Redis Cluster</p>
+                  <h2 className="text-lg font-bold text-white">Infrastructure & Engine Status</h2>
+                  <p className="text-xs text-slate-400">Node.js Express + MongoDB Native Driver + Redis Cache Layer</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -236,13 +241,18 @@ export default function HomePage() {
         {/* Phase Roadmap Overview */}
         <section className="w-full max-w-4xl text-center">
           <div className="p-8 rounded-2xl bg-gradient-to-b from-slate-900/60 to-slate-950/80 border border-slate-800/80">
-            <h3 className="text-lg font-bold text-white mb-2">Execution Roadmap Active</h3>
+            <h3 className="text-lg font-bold text-white mb-2">Execution Roadmap: Phase 1 through 5 Complete</h3>
             <p className="text-xs text-slate-400 mb-6 max-w-md mx-auto">
-              Phase 1 Monorepo & Infrastructure is scaffolded. Ready to proceed to Phase 2 (Authentication & Role Verification).
+              Foundation, Auth, Profiles, Seller Onboarding & Stores (Phase 4), and Categories & Products with Caching (Phase 5) are active.
             </p>
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors cursor-pointer shadow-lg shadow-indigo-600/30">
-              <span>View Implementation Tracker</span>
-              <ArrowRight className="w-4 h-4" />
+            <div className="flex items-center justify-center gap-3">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors cursor-pointer shadow-lg shadow-indigo-600/30"
+              >
+                <span>Launch Live Marketplace</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </section>

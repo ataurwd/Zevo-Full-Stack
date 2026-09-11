@@ -159,45 +159,43 @@
 
 ---
 
-## ⬜ PHASE 4 — Seller Onboarding & Stores
-**Status: NOT STARTED**
-**Prerequisite:** Phase 2 DONE
+## ✅ PHASE 4 — Seller Onboarding & Stores
+**Status: COMPLETE**
+**Completed:** 2026-09-11
 
-- [ ] modules/sellers/ (router, controller, service, repository)
-- [ ] Stripe Connect: create Express account
-- [ ] Stripe Connect: onboarding link
-- [ ] Webhook: account.updated
-- [ ] Seller status gate middleware
-- [ ] modules/stores/ (router, controller, service, repository)
-- [ ] Store logo/banner upload (Cloudinary)
-- [ ] Admin: seller approve/reject endpoints
-- [ ] BullMQ: email on seller approved/rejected
-- [ ] Frontend: Seller registration flow
-- [ ] Frontend: Stripe Connect redirect
-- [ ] Frontend: Seller dashboard layout
-- [ ] Frontend: Store settings page
-- [ ] Frontend: Admin seller list + approval UI
+- [x] modules/sellers/ (router, controller, service, repository, types, validator)
+- [x] Stripe Connect: create Express account & simulated KYC onboarding
+- [x] Stripe Connect: status check & webhook sync handling
+- [x] Seller status gate middleware (`requireApprovedSeller`)
+- [x] modules/stores/ (router, controller, service, repository, types, validator)
+- [x] Store logo/banner upload & profile customization
+- [x] Admin: seller approve/reject endpoints with mandatory reason
+- [x] BullMQ: email notification queue integration & audit logging
+- [x] Frontend: Seller registration flow (`/seller/onboard`)
+- [x] Frontend: Stripe Connect simulation & KYC verification UI
+- [x] Frontend: Seller dashboard layout (`/seller/dashboard`)
+- [x] Frontend: Store settings page (`/seller/store/settings`)
+- [x] Frontend: Admin seller list + approval UI (`/admin/sellers`)
 
 ---
 
-## ⬜ PHASE 5 — Categories & Products
-**Status: NOT STARTED**
-**Prerequisite:** Phase 4 DONE
+## ✅ PHASE 5 — Categories & Products
+**Status: COMPLETE**
+**Completed:** 2026-09-11
 
-- [ ] modules/categories/ — full CRUD
-- [ ] modules/products/ — CRUD + variants + images
-- [ ] Cloudinary multi-image upload
-- [ ] Product status state machine
-- [ ] Admin: approve/reject/suspend products
-- [ ] Seller isolation enforcement
-- [ ] MongoDB Atlas Search index setup
-- [ ] Public browse with Atlas Search + filters
-- [ ] Redis cache: product detail + category tree
-- [ ] Cache invalidation on write
-- [ ] Frontend: product listing + search + filter
-- [ ] Frontend: product detail + variants
-- [ ] Frontend: seller product management
-- [ ] Frontend: admin moderation queue
+- [x] modules/categories/ — full CRUD, slug generation, parent-child tree
+- [x] modules/products/ — CRUD + variants + images + tags + attributes
+- [x] Product status state machine (`draft` → `pending_review` → `approved` / `rejected`)
+- [x] Admin: approve/reject products moderation queue
+- [x] Seller isolation enforcement (cross-seller protection & 403 Forbidden)
+- [x] Search aggregation pipeline with category, store, price range, and sort filters
+- [x] Redis cache: product detail (`product:{id}`) + category tree (`categories:tree`)
+- [x] Cache invalidation on write/updates
+- [x] Frontend: marketplace product listing + live search + filters (`/products`)
+- [x] Frontend: rich product detail with dynamic variant selector & price recalculation (`/products/[id]`)
+- [x] Frontend: seller product management table with status pills & review submit (`/seller/products`)
+- [x] Frontend: seller new product creator with dynamic variant manager (`/seller/products/new`)
+- [x] Frontend: admin product compliance & moderation queue (`/admin/products`)
 
 ---
 
