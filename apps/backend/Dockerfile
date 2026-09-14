@@ -1,5 +1,6 @@
 # ==========================================
 # NEXORA Backend - Production Dockerfile
+# (Used when Root Directory is set to apps/backend)
 # ==========================================
 
 # --- Stage 1: Build & TypeScript Compilation ---

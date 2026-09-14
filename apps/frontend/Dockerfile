@@ -1,5 +1,6 @@
 # ==========================================
 # NEXORA Frontend - Production Multi-Stage Dockerfile
+# (Used when Root Directory is set to apps/frontend or frontend web service)
 # ==========================================
 
 # --- Stage 1: Dependencies ---
@@ -15,7 +16,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Pass build-time environment arguments
+# Build-time environment arguments
 ARG NEXT_PUBLIC_API_URL=https://nexora.com/api/v1
 ARG NEXT_PUBLIC_SOCKET_URL=https://nexora.com
 
@@ -38,7 +39,7 @@ ENV HOSTNAME="0.0.0.0"
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy static assets and public directory
+# Copy static public assets
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/public ./apps/frontend/public
 
@@ -46,7 +47,7 @@ COPY --from=builder /app/public ./apps/frontend/public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Copy standalone output or standard Next.js build
+# Copy standalone output and static assets (covers both root and monorepo path structures)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./apps/frontend/.next/static
