@@ -26,10 +26,17 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Determine backend socket URL
+    const defaultSocketUrl =
+      typeof window !== "undefined" &&
+      !window.location.hostname.includes("localhost") &&
+      !window.location.hostname.includes("127.0.0.1")
+        ? "https://zevo-full-stack.onrender.com"
+        : "http://localhost:5000";
+
     const socketUrl =
       process.env.NEXT_PUBLIC_SOCKET_URL ||
       process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ||
-      "http://localhost:5000";
+      defaultSocketUrl;
 
     const socketInstance = io(socketUrl, {
       transports: ["websocket", "polling"],

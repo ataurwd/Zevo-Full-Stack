@@ -1,4 +1,4 @@
-﻿import { apiFetch, getAccessToken } from "./client";
+import { apiFetch, getAccessToken, getApiBaseUrl } from "./client";
 import { User } from "./auth";
 
 export interface Address {
@@ -60,10 +60,10 @@ export async function uploadAvatar(file: File): Promise<User> {
   const formData = new FormData();
   formData.append("avatar", file);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  const baseUrl = getApiBaseUrl();
   const token = getAccessToken();
 
-  const response = await fetch(`${API_BASE_URL}/users/me/avatar`, {
+  const response = await fetch(`${baseUrl}/users/me/avatar`, {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: formData,
