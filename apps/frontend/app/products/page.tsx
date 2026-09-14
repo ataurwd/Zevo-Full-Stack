@@ -493,7 +493,7 @@ function ShopCatalogContent() {
         </div>
       )}
 
-      {/* Store Page Hero Banner Section with 500px Desktop Height & 3D Illustration Background */}
+      {/* Store Page Hero Banner Section with 500px Desktop Height & */}
       <section
         className="w-full relative overflow-hidden border-b border-[#D1E7D8] bg-[#c4ddc7] bg-no-repeat min-h-[380px] md:min-h-[440px]  flex items-center"
         style={{
