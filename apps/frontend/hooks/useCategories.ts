@@ -18,7 +18,7 @@ export interface UseCategoriesOptions {
 
 export const CATEGORIES_QUERY_KEY = ["categories"] as const;
 
-// Cross-tab and cross-component broadcast channel for instant real-time synchronization
+// Cross-tab and cross-component broadcast channel
 const CHANNEL_NAME = "nexora_categories_sync";
 
 export function broadcastCategoryUpdate() {
