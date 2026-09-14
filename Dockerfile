@@ -35,6 +35,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=5000
+ENV NODE_PATH=/app/node_modules
 
 # Install curl for container health checks
 RUN apk add --no-cache curl
@@ -44,14 +45,14 @@ RUN addgroup -S nexoragroup && adduser -S nexorauser -G nexoragroup
 
 # Copy production node_modules, compiled artifacts, and manifest
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/backend/node_modules ./apps/backend/node_modules
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
 COPY --from=builder /app/package.json ./package.json
 
-# Create uploads directory with non-root ownership
+# Create uploads directory and symlink for node_modules
 RUN mkdir -p /app/apps/backend/uploads /app/uploads && \
-    chown -R nexorauser:nexoragroup /app/apps/backend/uploads /app/uploads
+    ln -s /app/node_modules /app/apps/backend/node_modules && \
+    chown -R nexorauser:nexoragroup /app/apps/backend /app/uploads
 
 USER nexorauser
 
