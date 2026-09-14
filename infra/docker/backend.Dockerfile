@@ -12,7 +12,7 @@ RUN apk add --no-cache python3 make g++
 
 # Copy dependency manifests
 COPY package*.json ./
-RUN npm ci
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Copy source and configurations
 COPY tsconfig.json ./
@@ -22,7 +22,7 @@ COPY src/ ./src/
 RUN npm run build
 
 # Remove development dependencies
-RUN npm prune --production
+RUN npm prune --omit=dev
 
 # --- Stage 2: Minimal Production Runtime ---
 FROM node:20-alpine AS production
