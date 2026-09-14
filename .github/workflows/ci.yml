@@ -1,0 +1,67 @@
+name: NEXORA Continuous Integration
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate:
+    name: Typecheck, Test & Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Monorepo Dependencies
+        run: npm ci
+
+      - name: Run Monorepo Typecheck
+        run: npm run typecheck
+
+      - name: Run Backend Vitest Test Suites
+        env:
+          NODE_ENV: test
+          MONGODB_URI: mongodb://localhost:27017/nexora_test
+          REDIS_URL: redis://localhost:6379
+          JWT_ACCESS_SECRET: nexora_ci_jwt_access_secret_32chars_test_key!
+          JWT_REFRESH_SECRET: nexora_ci_jwt_refresh_secret_32chars_test_key!
+          STRIPE_SECRET_KEY: sk_test_mock_ci_key
+          STRIPE_WEBHOOK_SECRET: whsec_mock_ci_key
+        run: npm run test:backend -- --run
+
+      - name: Verify Frontend Production Build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1
+          NEXT_PUBLIC_SOCKET_URL: http://localhost:5000
+        run: npm run build:frontend

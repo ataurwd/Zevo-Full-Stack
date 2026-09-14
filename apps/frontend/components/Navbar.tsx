@@ -1,43 +1,104 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../providers/AuthProvider";
 import { useCart } from "../providers/CartProvider";
-import { ShoppingBag, Store, ShieldCheck, User, LogOut, Package, ShoppingCart, ClipboardList } from "lucide-react";
+import { ZevoLogo } from "./branding/ZevoLogo";
+import { CategoryMegaMenu } from "./categories/CategoryMegaMenu";
+import {
+  ShoppingBag,
+  Store,
+  ShieldCheck,
+  User,
+  LogOut,
+  Package,
+  ShoppingCart,
+  ClipboardList,
+  Bike,
+  MessageSquare,
+  LayoutDashboard,
+  LayoutGrid,
+  ChevronDown,
+} from "lucide-react";
+import { NotificationBell } from "./notifications/NotificationBell";
 
 export function Navbar() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const { itemCount, openDrawer } = useCart();
 
-  const isSeller = user?.role === "SELLER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+  const isSeller = user?.role === "SELLER";
+  const isRider = user?.role === "DELIVERY_AGENT";
   const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
+  const userPortalHref = isAdmin
+    ? "/admin"
+    : isSeller
+    ? "/dashboard"
+    : isRider
+    ? "/delivery/dashboard"
+    : "/orders";
+
+  const [isCategoryMegaOpen, setIsCategoryMegaOpen] = useState(false);
+  const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleOpenMegaMenu = () => {
+    if (megaMenuTimeoutRef.current) {
+      clearTimeout(megaMenuTimeoutRef.current);
+      megaMenuTimeoutRef.current = null;
+    }
+    setIsCategoryMegaOpen(true);
+  };
+
+  const handleCloseMegaMenu = () => {
+    if (megaMenuTimeoutRef.current) {
+      clearTimeout(megaMenuTimeoutRef.current);
+    }
+    megaMenuTimeoutRef.current = setTimeout(() => {
+      setIsCategoryMegaOpen(false);
+    }, 180);
+  };
+
+  const handleImmediateCloseMegaMenu = () => {
+    if (megaMenuTimeoutRef.current) {
+      clearTimeout(megaMenuTimeoutRef.current);
+      megaMenuTimeoutRef.current = null;
+    }
+    setIsCategoryMegaOpen(false);
+  };
+
+  useEffect(() => {
+    handleImmediateCloseMegaMenu();
+  }, [pathname]);
+
+  useEffect(() => {
+    return () => {
+      if (megaMenuTimeoutRef.current) {
+        clearTimeout(megaMenuTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 px-6 py-3.5 backdrop-blur-xl bg-white/80 border-b border-slate-200/80 transition-all">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/95 border-b border-[#D1E7D8] transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center font-black text-lg text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
-              N
-            </div>
-            <span className="font-extrabold text-xl tracking-tight text-slate-900 flex items-center gap-1.5">
-              NEXORA
-              <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
-            </span>
+          <Link href="/" className="flex items-center gap-1.5 group">
+            <ZevoLogo size="md" priority />
+            <span className="h-2 w-2 rounded-full bg-[#00A86B] animate-pulse ml-0.5"></span>
           </Link>
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-1">
             <Link
               href="/"
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 pathname === "/"
-                  ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                  ? "bg-[#E8F8EE] text-[#0A504A] border border-[#A2E4B8] font-bold"
+                  : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
               }`}
             >
               Overview
@@ -46,109 +107,167 @@ export function Navbar() {
             <Link
               href="/products"
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                pathname.startsWith("/products")
-                  ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                pathname.startsWith("/products") || pathname.startsWith("/shop")
+                  ? "bg-[#E8F8EE] text-[#0A504A] border border-[#A2E4B8] font-bold"
+                  : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
               }`}
             >
-              <ShoppingBag className="w-3.5 h-3.5 text-blue-600" />
-              <span>Marketplace</span>
+              <ShoppingBag className="w-3.5 h-3.5 text-[#00A86B]" />
+              <span>Shop</span>
             </Link>
 
-            <a
-              href="/#features"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition-all"
+            {/* Categories Mega Menu Trigger (Hover to open, mouseleave to auto-hide) */}
+            <div
+              className="relative inline-flex items-center"
+              onMouseEnter={handleOpenMegaMenu}
+              onMouseLeave={handleCloseMegaMenu}
             >
-              Features
-            </a>
+              <button
+                type="button"
+                onClick={() => setIsCategoryMegaOpen(!isCategoryMegaOpen)}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  isCategoryMegaOpen
+                    ? "bg-[#0A504A] text-white shadow-md shadow-[#0A504A]/30 border border-[#0A504A]"
+                    : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
+                }`}
+                title="Browse Categories"
+              >
+                <LayoutGrid className={`w-3.5 h-3.5 ${isCategoryMegaOpen ? "text-[#A2E4B8]" : "text-[#00A86B]"}`} />
+                <span>Categories</span>
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-200 ${
+                    isCategoryMegaOpen ? "rotate-180 text-[#A2E4B8]" : "text-[#0A504A]/60"
+                  }`}
+                />
+              </button>
+            </div>
 
-            <a
-              href="/#pricing"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition-all"
-            >
-              Pricing
-            </a>
-
-            <a
-              href="/#insights"
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition-all"
-            >
-              Insights
-            </a>
-
-            {isAuthenticated && (
+            {/* Role-Specific Portal Link */}
+            {isAdmin && (
               <Link
-                href="/orders"
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  pathname.startsWith("/orders")
-                    ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                href="/admin"
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  pathname.startsWith("/admin")
+                    ? "bg-[#0A504A] text-white shadow-sm"
+                    : "bg-[#00A86B] text-white hover:bg-[#0A504A] shadow-sm"
                 }`}
               >
-                <ClipboardList className="w-3.5 h-3.5 text-blue-600" />
-                <span>My Orders</span>
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin Portal</span>
               </Link>
             )}
 
             {isSeller && (
               <Link
-                href="/seller/dashboard"
+                href="/dashboard"
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  pathname.startsWith("/seller")
-                    ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                  pathname.startsWith("/dashboard") || pathname.startsWith("/seller")
+                    ? "bg-[#E8F8EE] text-[#0A504A] border border-[#A2E4B8] font-bold"
+                    : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
                 }`}
               >
-                <Store className="w-3.5 h-3.5 text-blue-600" />
+                <Store className="w-3.5 h-3.5 text-[#00A86B]" />
                 <span>Seller Portal</span>
               </Link>
             )}
 
-            {isAdmin && (
+            {isRider && (
               <Link
-                href="/admin/sellers"
+                href="/delivery/dashboard"
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  pathname.startsWith("/admin")
-                    ? "bg-purple-50 text-purple-700 border border-purple-200/60"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+                  pathname.startsWith("/delivery")
+                    ? "bg-[#E8F8EE] text-[#0A504A] border border-[#A2E4B8] font-bold"
+                    : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
-                <span>Admin</span>
+                <Bike className="w-3.5 h-3.5 text-[#00A86B]" />
+                <span>Rider Dispatch</span>
               </Link>
+            )}
+
+            {isAuthenticated && !isAdmin && (
+              <>
+                <Link
+                  href="/orders"
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    pathname.startsWith("/orders")
+                      ? "bg-[#E8F8EE] text-[#0A504A] border border-[#A2E4B8] font-bold"
+                      : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
+                  }`}
+                >
+                  <ClipboardList className="w-3.5 h-3.5 text-[#00A86B]" />
+                  <span>My Orders</span>
+                </Link>
+                <Link
+                  href="/chat"
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    pathname.startsWith("/chat")
+                      ? "bg-[#E8F8EE] text-[#0A504A] border border-[#A2E4B8] font-bold"
+                      : "text-[#0A504A]/75 hover:text-[#0A504A] hover:bg-[#E8F8EE]"
+                  }`}
+                >
+                  <MessageSquare className="w-3.5 h-3.5 text-[#00A86B]" />
+                  <span>Chat</span>
+                </Link>
+              </>
             )}
           </nav>
         </div>
 
         {/* User / Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          {/* Mobile Categories Button */}
+          <button
+            type="button"
+            onClick={() => setIsCategoryMegaOpen(!isCategoryMegaOpen)}
+            className={`md:hidden p-2 rounded-xl border text-[#0A504A] transition-all cursor-pointer ${
+              isCategoryMegaOpen
+                ? "bg-[#0A504A] text-white border-[#0A504A]"
+                : "bg-white border-[#D1E7D8] hover:text-[#00A86B] hover:border-[#A2E4B8] shadow-xs"
+            }`}
+            title="Browse Categories"
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+
+          {/* Notification Bell */}
+          {isAuthenticated && <NotificationBell />}
+
           {/* Shopping Cart Drawer Trigger */}
           <button
             onClick={openDrawer}
-            className="relative p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 shadow-xs hover:shadow-sm transition-all"
-            title="Shopping Cart"
+            className="relative p-2.5 rounded-xl bg-white border border-[#D1E7D8] text-[#0A504A] hover:text-[#00A86B] hover:border-[#A2E4B8] shadow-xs hover:shadow-md transition-all cursor-pointer group"
+            title={`Shopping Cart (${itemCount} items)`}
+            aria-label={`Shopping Cart with ${itemCount} items`}
           >
-            <ShoppingCart className="w-4 h-4" />
+            <ShoppingCart className="w-4 h-4 group-hover:scale-110 transition-transform" />
             {itemCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center shadow-sm">
-                {itemCount}
+              <span
+                key={itemCount}
+                className="absolute -top-1.5 -right-2 min-w-[20px] h-5 px-1 rounded-full bg-[#00A86B] text-white font-black text-[11px] flex items-center justify-center shadow-md ring-2 ring-white"
+              >
+                {itemCount > 99 ? "99+" : itemCount}
               </span>
             )}
           </button>
 
           {isAuthenticated && user ? (
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col text-right">
-                <span className="text-xs font-semibold text-slate-800">
+              <Link
+                href={userPortalHref}
+                className="hidden sm:flex flex-col text-right hover:opacity-80 transition-opacity"
+                title={`Open ${user.role} Portal`}
+              >
+                <span className="text-xs font-semibold text-[#0A504A]">
                   {user.first_name ? `${user.first_name} ${user.last_name || ""}` : user.email}
                 </span>
-                <span className="text-[10px] uppercase font-mono text-blue-600 font-bold tracking-wider">
+                <span className="text-[10px] uppercase font-mono text-[#00A86B] font-bold tracking-wider">
                   {user.role}
                 </span>
-              </div>
+              </Link>
               <button
                 onClick={() => logout()}
-                className="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:border-rose-200 shadow-xs transition-colors"
+                className="p-2 rounded-xl bg-white border border-[#D1E7D8] text-slate-500 hover:text-rose-600 hover:border-rose-200 shadow-xs transition-colors cursor-pointer"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
@@ -158,13 +277,13 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="px-4 py-2 rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2 rounded-full text-xs font-semibold text-[#0A504A] hover:text-[#00A86B] hover:bg-[#E8F8EE] transition-colors"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-md shadow-blue-500/25 hover:shadow-blue-500/35"
+                className="px-5 py-2 rounded-full text-xs font-semibold bg-[#00A86B] hover:bg-[#0A504A] text-white transition-all shadow-md shadow-[#00A86B]/25 hover:shadow-[#0A504A]/30"
               >
                 Get App
               </Link>
@@ -172,6 +291,14 @@ export function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Categories Mega Menu */}
+      <CategoryMegaMenu
+        isOpen={isCategoryMegaOpen}
+        onClose={handleImmediateCloseMegaMenu}
+        onMouseEnter={handleOpenMegaMenu}
+        onMouseLeave={handleCloseMegaMenu}
+      />
     </header>
   );
 }

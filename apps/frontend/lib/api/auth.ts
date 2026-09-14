@@ -3,7 +3,7 @@
 export interface User {
   id: string;
   email: string;
-  role: "CUSTOMER" | "SELLER" | "DELIVERY_AGENT" | "ADMIN" | "SUPER_ADMIN";
+  role: "CUSTOMER" | "SELLER" | "DELIVERY_AGENT" | "ADMIN" | "SUPER_ADMIN" | "SUPPORT";
   first_name: string;
   last_name: string;
   phone?: string | null;
@@ -20,6 +20,12 @@ export interface RegisterPayload {
   last_name: string;
   role?: "CUSTOMER" | "SELLER" | "DELIVERY_AGENT";
   phone?: string;
+  delivery_zones?: string[];
+  service_city?: string;
+  vehicle_type?: "bicycle" | "motorcycle" | "scooter" | "car";
+  vehicle_number?: string;
+  license_number?: string;
+  business_name?: string;
 }
 
 export interface LoginPayload {

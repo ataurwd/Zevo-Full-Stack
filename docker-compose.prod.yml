@@ -1,0 +1,155 @@
+version: "3.9"
+
+services:
+  # 1. MongoDB Replica Set (Primary)
+  mongodb:
+    image: mongo:7.0
+    container_name: nexora-prod-mongodb
+    command: ["--replSet", "rs0", "--bind_ip_all", "--oplogSize", "1024"]
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: nexora
+    volumes:
+      - mongodb_prod_data:/data/db
+    networks:
+      - nexora-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4096M
+
+  # One-time Replica Set Initializer
+  mongo-init:
+    image: mongo:7.0
+    container_name: nexora-prod-mongo-init
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command: >
+      mongosh --host mongodb:27017 --eval
+      'try { rs.status() } catch(err) { rs.initiate({_id: "rs0", members: [{_id: 0, host: "mongodb:27017"}]}) }'
+    restart: "no"
+    networks:
+      - nexora-network
+
+  # 2. Redis Cache & Queue Broker
+  redis:
+    image: redis:7.2-alpine
+    container_name: nexora-prod-redis
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "1024mb", "--maxmemory-policy", "volatile-lru"]
+    restart: always
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - nexora-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1536M
+
+  # 3. NEXORA Backend API & BullMQ Workers
+  api:
+    build:
+      context: ./apps/backend
+      dockerfile: ../../infra/docker/backend.Dockerfile
+    container_name: nexora-prod-api
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/nexora?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
+      - CORS_ORIGIN=https://nexora.com,https://www.nexora.com
+    env_file:
+      - .env.production
+    volumes:
+      - backend_uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexora-network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2048M
+
+  # 4. NEXORA Next.js Frontend
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: ../../infra/docker/frontend.Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://nexora.com/api/v1
+        NEXT_PUBLIC_SOCKET_URL: https://nexora.com
+    container_name: nexora-prod-frontend
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    depends_on:
+      - api
+    networks:
+      - nexora-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 2048M
+
+  # 5. Production Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nexora-prod-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/prod.conf:/etc/nginx/nginx.conf:ro
+      - nginx_prod_logs:/var/log/nginx
+      - certbot_certs:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - nexora-network
+
+  # 6. Certbot for Automated SSL
+  certbot:
+    image: certbot/certbot:latest
+    container_name: nexora-prod-certbot
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - nexora-network
+
+networks:
+  nexora-network:
+    driver: bridge
+
+volumes:
+  mongodb_prod_data:
+  redis_prod_data:
+  nginx_prod_logs:
+  certbot_certs:
+  certbot_www:
+  backend_uploads:

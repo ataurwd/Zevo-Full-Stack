@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "../../components/Navbar";
@@ -19,6 +19,7 @@ import {
   Loader2,
   ArrowLeft,
 } from "lucide-react";
+import { getProductUrl } from "../../lib/utils/slug";
 
 export default function FullCartPage() {
   const router = useRouter();
@@ -39,6 +40,16 @@ export default function FullCartPage() {
   const [couponMsg, setCouponMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [validationIssues, setValidationIssues] = useState<string[]>([]);
+
+  useEffect(() => {
+    validateCart()
+      .then((res) => {
+        if (res && !res.is_valid && res.issues.length > 0) {
+          setValidationIssues(res.issues.map((i) => i.message));
+        }
+      })
+      .catch(() => {});
+  }, [validateCart]);
 
   const formatCents = (cents: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -68,17 +79,16 @@ export default function FullCartPage() {
     setValidationIssues([]);
     try {
       const res = await validateCart();
-      if (!res.is_valid) {
+      if (!res.is_valid && res.issues.length > 0) {
         setValidationIssues(res.issues.map((i) => i.message));
-      } else {
-        // Ready for Phase 8 checkout
-        alert("Cart verified! Real-time prices & stock confirmed. Ready for checkout.");
+        return;
       }
-    } catch (err: any) {
-      setValidationIssues([err.message || "Validation failed"]);
+    } catch {
+      // Continue to checkout if validation service is silent
     } finally {
       setIsValidating(false);
     }
+    router.push("/checkout");
   };
 
   return (
@@ -189,7 +199,7 @@ export default function FullCartPage() {
                               </div>
                               <div>
                                 <Link
-                                  href={`/products/${item.product_id}`}
+                                  href={getProductUrl({ id: item.product_id, name: item.name })}
                                   className="font-bold text-slate-900 hover:text-blue-600 transition-colors block text-sm"
                                 >
                                   {item.name}
@@ -257,7 +267,7 @@ export default function FullCartPage() {
               <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 flex items-center gap-3">
                 <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
                 <span className="text-xs text-slate-700">
-                  NEXORA Multi-Vendor Routing: Each vendor fulfills their portion independently with dedicated tracking numbers.
+                  ZEVO Multi-Vendor Routing: Each vendor fulfills their portion independently with dedicated tracking numbers.
                 </span>
               </div>
             </div>

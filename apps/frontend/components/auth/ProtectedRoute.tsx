@@ -7,7 +7,7 @@ import { ShieldAlert, Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: Array<"CUSTOMER" | "SELLER" | "DELIVERY_AGENT" | "ADMIN" | "SUPER_ADMIN">;
+  allowedRoles?: Array<"CUSTOMER" | "SELLER" | "DELIVERY_AGENT" | "ADMIN" | "SUPER_ADMIN" | "SUPPORT">;
 }
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {

@@ -11,6 +11,9 @@ export interface SellerProfile {
   business_type: "individual" | "company";
   tax_id?: string | null;
   bank_verified: boolean;
+  user_name?: string;
+  user_email?: string;
+  user_phone?: string;
   total_earnings: number;
   pending_balance: number;
   total_commission_paid: number;

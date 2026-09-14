@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../../providers/CartProvider";
 import {
@@ -14,6 +13,7 @@ import {
   Tag,
   Loader2,
   Package,
+  AlertCircle,
 } from "lucide-react";
 
 export function CartDrawer() {
@@ -27,12 +27,31 @@ export function CartDrawer() {
     clearCart,
     applyCoupon,
     removeCoupon,
+    validateCart,
     itemCount,
   } = useCart();
 
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [outOfStockNotice, setOutOfStockNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isDrawerOpen) {
+      validateCart()
+        .then((res) => {
+          if (res && !res.is_valid && res.issues.length > 0) {
+            const oosIssue = res.issues.find((i) => i.issue === "out_of_stock");
+            if (oosIssue) {
+              setOutOfStockNotice(
+                oosIssue.message || "An out-of-stock item was automatically removed from your cart."
+              );
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isDrawerOpen, validateCart]);
 
   if (!isDrawerOpen) return null;
 
@@ -60,23 +79,24 @@ export function CartDrawer() {
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Dark backdrop */}
+      {/* Dimmed backdrop */}
       <div
         onClick={closeDrawer}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity cursor-pointer"
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white/95 backdrop-blur-2xl border-l border-slate-200 text-slate-800 flex flex-col shadow-2xl">
+        {/* Solid white drawer container - No ugly transparency */}
+        <div className="w-screen max-w-md bg-white text-gray-900 flex flex-col shadow-2xl border-l border-gray-200">
           {/* Drawer Header */}
-          <div className="p-5 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/50">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+          <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-50 text-[#00A86B] border border-emerald-200/60">
                 <ShoppingBag className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-slate-900">Your Shopping Cart</h2>
-                <span className="text-xs text-slate-500 font-medium">
+                <h2 className="text-base font-black text-[#0A504A] tracking-tight">Your Shopping Cart</h2>
+                <span className="text-xs text-gray-500 font-medium">
                   {itemCount} {itemCount === 1 ? "item" : "items"}
                 </span>
               </div>
@@ -86,94 +106,116 @@ export function CartDrawer() {
               {cart && cart.items.length > 0 && (
                 <button
                   onClick={() => clearCart()}
-                  className="text-[11px] font-semibold text-slate-400 hover:text-rose-600 transition-colors"
+                  className="text-xs font-semibold text-gray-400 hover:text-rose-600 transition-colors px-2 py-1 cursor-pointer"
                 >
                   Clear
                 </button>
               )}
               <button
                 onClick={closeDrawer}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                aria-label="Close cart"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 stroke-[2.2]" />
               </button>
             </div>
           </div>
 
+          {/* Out of Stock Removed Alert Notice */}
+          {outOfStockNotice && (
+            <div className="p-3 mx-6 mt-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between shadow-2xs animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span className="font-semibold">{outOfStockNotice}</span>
+              </div>
+              <button
+                onClick={() => setOutOfStockNotice(null)}
+                className="text-amber-700 hover:text-amber-900 p-1 cursor-pointer"
+                title="Dismiss notice"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* Items List */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-3.5">
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3 bg-[#F8FAF9]">
             {!cart || cart.items.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 mb-4 text-slate-400">
-                  <ShoppingBag className="w-8 h-8" />
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/60 mb-4 text-[#00A86B]">
+                  <ShoppingBag className="w-8 h-8 stroke-[2]" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-800">Your cart is empty</h3>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs mb-6">
-                  Explore verified multi-vendor products and add items to your cart.
+                <h3 className="text-base font-bold text-gray-900">Your cart is empty</h3>
+                <p className="text-xs text-gray-500 mt-1 max-w-xs mb-6 leading-relaxed">
+                  Explore fresh items in our catalog and add them to your cart.
                 </p>
                 <button
                   onClick={() => {
                     closeDrawer();
                     router.push("/products");
                   }}
-                  className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-xs font-semibold text-white transition-all shadow-md shadow-blue-500/25"
+                  className="px-6 py-2.5 rounded-xl bg-[#00A86B] hover:bg-[#0A504A] text-xs font-bold text-white transition-all shadow-md shadow-[#00A86B]/20 cursor-pointer"
                 >
-                  Browse Marketplace
+                  Browse Catalog
                 </button>
               </div>
             ) : (
               cart.items.map((item) => (
                 <div
                   key={item.variant_id}
-                  className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 flex gap-3.5 shadow-xs"
+                  className="p-3.5 rounded-2xl bg-white border border-gray-200/80 flex gap-3.5 shadow-2xs hover:shadow-xs transition-shadow"
                 >
-                  {/* Image */}
-                  <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                  {/* Product Image */}
+                  <div className="w-16 h-16 rounded-xl bg-[#F4F6F5] border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden p-1">
                     {item.image_url ? (
                       <img
                         src={item.image_url}
                         alt={item.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
-                      <Package className="w-6 h-6 text-slate-400" />
+                      <Package className="w-6 h-6 text-[#00A86B]" />
                     )}
                   </div>
 
                   {/* Details */}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-bold text-slate-900 truncate">{item.name}</h4>
-                    <span className="text-[11px] text-blue-600 font-medium block truncate">
-                      {item.variant_name}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-slate-800 mt-1 block">
-                      {formatCents(item.price)}
-                    </span>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-gray-900 truncate">{item.name}</h4>
+                      {item.variant_name && item.variant_name !== "Default" && (
+                        <span className="text-[11px] text-[#00A86B] font-semibold block truncate mt-0.5">
+                          {item.variant_name}
+                        </span>
+                      )}
+                      <span className="text-xs font-black text-[#0A504A] mt-1 block">
+                        {formatCents(item.price)}
+                      </span>
+                    </div>
 
-                    {/* Quantity Controls */}
-                    <div className="flex items-center justify-between mt-2.5">
-                      <div className="flex items-center rounded-lg bg-white border border-slate-200 p-0.5 shadow-2xs">
+                    {/* Quantity Controls & Delete */}
+                    <div className="flex items-center justify-between mt-2 pt-1 border-t border-gray-50">
+                      <div className="flex items-center rounded-lg bg-gray-50 border border-gray-200 p-0.5">
                         <button
                           onClick={() => updateQuantity(item.variant_id, item.quantity - 1)}
                           disabled={item.quantity <= 1}
-                          className="w-5 h-5 rounded flex items-center justify-center text-slate-500 hover:text-slate-900 disabled:opacity-30"
+                          className="w-5 h-5 rounded flex items-center justify-center text-gray-500 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-3 h-3 stroke-[2.5]" />
                         </button>
-                        <span className="w-7 text-center font-mono text-xs font-bold text-slate-900">
+                        <span className="w-7 text-center font-mono text-xs font-bold text-gray-900">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.variant_id, item.quantity + 1)}
-                          className="w-5 h-5 rounded flex items-center justify-center text-slate-500 hover:text-slate-900"
+                          className="w-5 h-5 rounded flex items-center justify-center text-gray-500 hover:text-gray-900 cursor-pointer"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3 h-3 stroke-[2.5]" />
                         </button>
                       </div>
 
                       <button
                         onClick={() => removeItem(item.variant_id)}
-                        className="p-1 rounded text-slate-400 hover:text-rose-600 transition-colors"
+                        className="p-1 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                         title="Remove item"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -187,22 +229,22 @@ export function CartDrawer() {
 
           {/* Drawer Footer / Summary */}
           {cart && cart.items.length > 0 && (
-            <div className="p-5 border-t border-slate-200/80 space-y-4 bg-slate-50/50">
+            <div className="p-5 bg-white border-t border-gray-100 space-y-4 shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
               {/* Promo code form */}
               {cart.coupon ? (
-                <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-between text-xs">
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <Tag className="w-3.5 h-3.5 text-blue-600" />
-                    <span className="font-mono font-bold text-blue-800">
+                    <Tag className="w-3.5 h-3.5 text-[#00A86B]" />
+                    <span className="font-mono font-bold text-[#0A504A]">
                       {cart.coupon.code}
                     </span>
-                    <span className="text-[10px] text-blue-600 font-semibold">
+                    <span className="text-[10px] text-[#00A86B] font-bold">
                       (-{formatCents(cart.discount)})
                     </span>
                   </div>
                   <button
                     onClick={() => removeCoupon()}
-                    className="text-[11px] font-semibold text-slate-500 hover:text-rose-600"
+                    className="text-[11px] font-bold text-gray-500 hover:text-rose-600 cursor-pointer"
                   >
                     Remove
                   </button>
@@ -213,13 +255,13 @@ export function CartDrawer() {
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Coupon (e.g. WELCOME10)"
-                    className="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono uppercase text-slate-900 focus:outline-none focus:border-blue-500 shadow-2xs"
+                    placeholder="Coupon code (e.g. WELCOME10)"
+                    className="flex-1 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-mono uppercase text-gray-900 focus:outline-none focus:border-[#00A86B] focus:bg-white transition-colors"
                   />
                   <button
                     type="submit"
                     disabled={couponLoading || !couponCode.trim()}
-                    className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-xs font-semibold text-white transition-colors shadow-2xs"
+                    className="px-4 py-2 rounded-xl bg-[#0A504A] hover:bg-[#00A86B] disabled:opacity-40 text-xs font-bold text-white transition-colors cursor-pointer"
                   >
                     {couponLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
                   </button>
@@ -232,32 +274,43 @@ export function CartDrawer() {
 
               {/* Totals */}
               <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between text-slate-500">
+                <div className="flex justify-between text-gray-500">
                   <span>Subtotal</span>
-                  <span className="font-mono text-slate-900 font-medium">{formatCents(cart.subtotal)}</span>
+                  <span className="font-mono text-gray-900 font-bold">{formatCents(cart.subtotal)}</span>
                 </div>
                 {cart.discount > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
+                  <div className="flex justify-between text-[#00A86B] font-bold">
                     <span>Discount</span>
                     <span className="font-mono">-{formatCents(cart.discount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-slate-900 font-bold text-sm pt-2.5 border-t border-slate-200">
+                <div className="flex justify-between text-gray-900 font-bold text-sm pt-2.5 border-t border-gray-100">
                   <span>Estimated Total</span>
-                  <span className="font-mono text-lg text-slate-900 font-black">{formatCents(cart.total)}</span>
+                  <span className="font-mono text-xl text-[#0A504A] font-black">{formatCents(cart.total)}</span>
                 </div>
               </div>
 
-              {/* Checkout CTA */}
-              <div className="space-y-2 pt-1">
+              {/* Action Buttons in a clean Flex Row */}
+              <div className="flex items-center gap-3 pt-1">
                 <button
+                  type="button"
                   onClick={() => {
                     closeDrawer();
                     router.push("/cart");
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition-all shadow-md shadow-blue-500/25 hover:shadow-blue-500/35"
+                  className="flex-1 py-3 px-4 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-xs font-bold text-gray-800 transition-colors cursor-pointer text-center"
                 >
-                  <span>Proceed to Checkout</span>
+                  View Cart
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeDrawer();
+                    router.push("/checkout");
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-3 px-4 rounded-xl bg-[#00A86B] hover:bg-[#0A504A] text-xs font-bold text-white transition-all shadow-md shadow-[#00A86B]/20 cursor-pointer active:scale-[0.98] text-center"
+                >
+                  <span>Checkout</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>

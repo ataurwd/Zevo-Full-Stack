@@ -32,6 +32,8 @@ export interface ProductItem {
   attributes: Array<{ name: string; value: string }>;
   variants: ProductVariant[];
   base_price: number; // in cents
+  compare_at_price?: number | null; // in cents
+  inventory_quantity?: number | null;
   rating_avg: number;
   rating_count: number;
   total_sold: number;
@@ -53,8 +55,13 @@ export interface CreateProductInput {
     price: number; // in cents
     compare_at_price?: number;
     weight_grams?: number;
+    quantity?: number;
     is_active?: boolean;
   }>;
+  shipping?: any;
+  selling_type?: "in_store" | "online" | "both";
+  inventory_quantity?: number;
+  sku?: string;
 }
 
 export interface BrowseProductsParams {
@@ -97,8 +104,9 @@ export async function browseProducts(
   return res.data;
 }
 
-export async function getProductPublicDetail(id: string): Promise<ProductItem> {
-  const res = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/${id}`);
+export async function getProductPublicDetail(idOrSlug: string): Promise<ProductItem> {
+  const encoded = encodeURIComponent(decodeURIComponent(idOrSlug));
+  const res = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/${encoded}`);
   return res.data;
 }
 
@@ -202,4 +210,29 @@ export async function adminRejectProduct(id: string, reason: string): Promise<Pr
     }
   );
   return res.data;
+}
+
+export async function adminCreateProduct(input: any): Promise<ProductItem> {
+  const res = await apiFetch<{ success: boolean; data: ProductItem }>("/products/admin", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+  return res.data;
+}
+
+export async function adminUpdateProduct(
+  id: string,
+  input: any
+): Promise<ProductItem> {
+  const res = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/admin/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+  return res.data;
+}
+
+export async function adminDeleteProduct(id: string): Promise<void> {
+  await apiFetch(`/products/admin/${id}`, {
+    method: "DELETE",
+  });
 }

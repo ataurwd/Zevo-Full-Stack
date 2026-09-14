@@ -73,7 +73,7 @@ export async function createStore(data: CreateStoreRequest): Promise<StoreProfil
 }
 
 export async function updateMyStore(data: UpdateStoreRequest): Promise<StoreProfile> {
-  const res = await apiFetch<{ success: boolean; data: StoreProfile }>("/stores/me", {
+  const res = await apiFetch<{ success: boolean; data: StoreProfile }>("/stores/seller/me", {
     method: "PATCH",
     body: JSON.stringify(data),
   });
@@ -89,5 +89,36 @@ export async function listActiveStores(page = 1, limit = 20): Promise<{ items: S
   const res = await apiFetch<{ success: boolean; data: { items: StoreProfile[]; pagination: any } }>(
     `/stores?page=${page}&limit=${limit}`
   );
+  return res.data;
+}
+
+
+export interface AdminStoreProfile {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  seller_id: string;
+  seller: string;
+  seller_email?: string | null;
+  seller_phone?: string | null;
+  status: "ACTIVE" | "PENDING" | "SUSPENDED" | "APPROVED" | "REJECTED";
+  is_open: boolean;
+  productsCount: number;
+  ordersTotal: string;
+  rating: number;
+  rating_count: number;
+  address?: any;
+  joined: string;
+  created_at: string;
+}
+
+export async function adminListStores(): Promise<AdminStoreProfile[]> {
+  const res = await apiFetch<{ success: boolean; data: AdminStoreProfile[] }>("/stores/admin/all");
+  return res.data;
+}
+
+export async function getMyStore(): Promise<StoreProfile> {
+  const res = await apiFetch<{ success: boolean; data: StoreProfile }>("/stores/seller/me");
   return res.data;
 }

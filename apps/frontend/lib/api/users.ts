@@ -113,3 +113,88 @@ export async function deleteAddress(id: string): Promise<void> {
     method: "DELETE",
   });
 }
+
+
+export interface AdminUserItem {
+  id: string;
+  name: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: "CUSTOMER" | "SELLER" | "RIDER" | "ADMIN" | "SUPER_ADMIN";
+  original_role: string;
+  phone?: string;
+  status: "ACTIVE" | "SUSPENDED";
+  is_active: boolean;
+  ordersCount: number;
+  joined: string;
+  created_at: string;
+  rider_profile?: {
+    vehicle_type: string;
+    vehicle_number: string;
+    license_number: string;
+    service_city?: string;
+    delivery_zones?: string[];
+    is_online: boolean;
+    rating: number;
+  } | null;
+}
+
+export interface AdminUsersResponse {
+  users: AdminUserItem[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export async function adminGetUsers(params?: {
+  role?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<AdminUsersResponse> {
+  const query = new URLSearchParams();
+  if (params?.role && params.role !== "ALL") query.set("role", params.role);
+  if (params?.search && params.search.trim()) query.set("search", params.search.trim());
+  if (params?.page) query.set("page", params.page.toString());
+  if (params?.limit) query.set("limit", params.limit.toString());
+
+  const qs = query.toString();
+  const endpoint = `/users/admin${qs ? `?${qs}` : ""}`;
+  const res = await apiFetch<{ data: AdminUsersResponse }>(endpoint);
+  return res.data;
+}
+
+export async function adminCreateUser(payload: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  phone?: string;
+  password?: string;
+  service_city?: string;
+  delivery_zones?: string[];
+}): Promise<any> {
+  const res = await apiFetch<{ data: any }>("/users/admin", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return res.data;
+}
+
+export async function adminUpdateUser(
+  id: string,
+  payload: {
+    role?: string;
+    is_active?: boolean;
+    phone?: string;
+    first_name?: string;
+    last_name?: string;
+  }
+): Promise<any> {
+  const res = await apiFetch<{ data: any }>(`/users/admin/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return res.data;
+}

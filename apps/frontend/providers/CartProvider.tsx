@@ -87,7 +87,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       quantity,
     });
     setCart(updated);
-    openDrawer();
   };
 
   const updateQuantity = async (variantId: string, quantity: number) => {
@@ -129,7 +128,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return res;
   };
 
-  const itemCount = cart?.item_count || 0;
+  const itemCount =
+    typeof cart?.item_count === "number" && cart.item_count > 0
+      ? cart.item_count
+      : cart?.items?.reduce((sum, item) => sum + (item.quantity || 1), 0) ?? 0;
 
   return (
     <CartContext.Provider

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145 110" fill="none">
+  <defs>
+    <linearGradient id="zevoGradBright" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D084" />
+      <stop offset="50%" stop-color="#00A86B" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="zevoGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#073A36" />
+      <stop offset="100%" stop-color="#0F3B33" />
+    </linearGradient>
+    <linearGradient id="zevoGradMint" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A2E4B8" />
+      <stop offset="100%" stop-color="#D1E7D8" />
+    </linearGradient>
+  </defs>
+  <!-- Top bar of Z -->
+  <polygon points="12,12 88,12 70,30 28,30" fill="url(#zevoGradBright)" />
+  <!-- Diagonal ribbon of Z -->
+  <polygon points="70,30 88,12 28,98 12,98" fill="url(#zevoGradBright)" />
+  <!-- Bottom bar of Z -->
+  <polygon points="12,98 28,80 88,80 88,98" fill="url(#zevoGradBright)" />
+  <!-- Inner pale facet -->
+  <polygon points="28,30 65,75 28,80" fill="url(#zevoGradMint)" opacity="0.85" />
+  <!-- Dark green interlocking chevron -->
+  <polygon points="62,28 78,14 132,88 116,102" fill="url(#zevoGradDark)" />
+  <polygon points="62,28 116,102 100,102 52,38" fill="url(#zevoGradDark)" />
+</svg>

@@ -61,3 +61,19 @@ export async function adminInitiateRefund(
   );
   return res.data;
 }
+
+export async function getAdminAllPayments(params: {
+  page?: number;
+  limit?: number;
+  status?: string;
+} = {}): Promise<{ payments: PaymentItem[]; total: number }> {
+  const query = new URLSearchParams();
+  if (params.page) query.append("page", params.page.toString());
+  if (params.limit) query.append("limit", params.limit.toString());
+  if (params.status && params.status !== "all") query.append("status", params.status);
+
+  const res = await apiFetch<{ data: { payments: PaymentItem[]; total: number } }>(
+    `/payments/admin/all?${query.toString()}`
+  );
+  return res.data;
+}

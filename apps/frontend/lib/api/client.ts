@@ -4,10 +4,43 @@ let inMemoryAccessToken: string | null = null;
 
 export function setAccessToken(token: string | null): void {
   inMemoryAccessToken = token;
+  if (typeof window !== "undefined") {
+    if (token) {
+      try {
+        localStorage.setItem("zevo_access_token", token);
+        localStorage.setItem("nexora_access_token", token);
+        document.cookie = `zevo_token=${token}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+        document.cookie = `nexora_token=${token}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+      } catch (e) {
+        // ignore
+      }
+    } else {
+      try {
+        localStorage.removeItem("zevo_access_token");
+        localStorage.removeItem("nexora_access_token");
+        document.cookie = "zevo_token=; path=/; max-age=0; SameSite=Lax";
+        document.cookie = "nexora_token=; path=/; max-age=0; SameSite=Lax";
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
 }
 
 export function getAccessToken(): string | null {
-  return inMemoryAccessToken;
+  if (inMemoryAccessToken) return inMemoryAccessToken;
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("zevo_access_token") || localStorage.getItem("nexora_access_token");
+      if (stored) {
+        inMemoryAccessToken = stored;
+        return stored;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  return null;
 }
 
 let inMemoryGuestCartId: string | null = null;
@@ -15,13 +48,13 @@ let inMemoryGuestCartId: string | null = null;
 export function getGuestCartId(): string | null {
   if (inMemoryGuestCartId) return inMemoryGuestCartId;
   if (typeof window !== "undefined") {
-    let stored = localStorage.getItem("nexora_guest_cart_id");
+    let stored = localStorage.getItem("zevo_guest_cart_id") || localStorage.getItem("nexora_guest_cart_id");
     if (!stored) {
       stored =
         typeof crypto !== "undefined" && crypto.randomUUID
           ? crypto.randomUUID()
           : "guest-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-      localStorage.setItem("nexora_guest_cart_id", stored);
+      localStorage.setItem("zevo_guest_cart_id", stored);
     }
     inMemoryGuestCartId = stored;
     return stored;
@@ -32,6 +65,7 @@ export function getGuestCartId(): string | null {
 export function clearGuestCartId(): void {
   inMemoryGuestCartId = null;
   if (typeof window !== "undefined") {
+    localStorage.removeItem("zevo_guest_cart_id");
     localStorage.removeItem("nexora_guest_cart_id");
   }
 }
@@ -62,8 +96,9 @@ export async function apiFetch<T = any>(
   const headers = new Headers(options.headers || {});
   headers.set("Content-Type", "application/json");
 
-  if (inMemoryAccessToken) {
-    headers.set("Authorization", `Bearer ${inMemoryAccessToken}`);
+  const token = getAccessToken();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
   } else {
     const guestCartId = getGuestCartId();
     if (guestCartId) {

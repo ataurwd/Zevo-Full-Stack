@@ -1,225 +1,207 @@
-﻿# NEXORA — Multi-Vendor Commerce & Logistics Platform
+# NEXORA — Hyperlocal Multi-Vendor Commerce & Logistics Platform
 
-> A production-grade, full-stack multi-vendor marketplace and logistics platform.  
-> Built as a portfolio-quality system demonstrating scalable architecture, real-time features, and modern DevOps practices.
+<div align="center">
 
----
+![Platform Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?style=for-the-badge&logo=typescript)
+![Next.js](https://img.shields.io/badge/Next.js-14.2%20App%20Router-black?style=for-the-badge&logo=next.js)
+![Express](https://img.shields.io/badge/Express-4.19-green?style=for-the-badge&logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.0%20ReplicaSet-green?style=for-the-badge&logo=mongodb)
+![Redis](https://img.shields.io/badge/Redis-7.2%20Pub%2FSub%20%2B%20Cache-red?style=for-the-badge&logo=redis)
+![BullMQ](https://img.shields.io/badge/BullMQ-5.14%20Queues-orange?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Vitest-96%2F96%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)
 
-## 📸 Screenshots
+<p align="center">
+  A full-stack, enterprise-grade multi-vendor marketplace and hyperlocal logistics platform featuring real-time telematics, two-phase inventory reservations, automatic sub-order splitting, vendor payouts, and Prometheus observability.
+</p>
 
-> _Screenshots will be added during implementation phases._
-
-| Customer Marketplace | Seller Dashboard | Delivery Tracking |
-|---|---|---|
-| _(coming soon)_ | _(coming soon)_ | _(coming soon)_ |
-
----
-
-## 🚀 Features
-
-### Customer
-- Browse marketplace across multiple sellers
-- Full-text product search (Atlas Search)
-- Product variants (size, color, etc.)
-- Guest browsing, authenticated checkout
-- Redis-persisted cart (merges on login)
-- Multi-seller cart — single checkout, split sub-orders
-- Real-time order tracking
-- Live delivery map with rider location
-- Customer ↔ Seller / Rider chat
-- Stripe-powered checkout
-- Coupon codes
-- Product reviews and ratings
-- Push and in-app notifications
-
-### Seller
-- Seller registration with admin approval workflow
-- Storefront management and branding
-- Product and variant management (draft → pending_review → approved)
-- SKU-level inventory management
-- Order management per store
-- Revenue dashboard with commission breakdown
-- Withdrawal request system
-- Customer chat per order
-- Real-time stock alerts via BullMQ
-
-### Delivery / Rider
-- Rider registration with admin approval
-- Proximity-based auto-assignment via BullMQ
-- Delivery state machine (assigned → picked_up → delivered)
-- Real-time GPS location broadcasting
-- Earnings dashboard
-
-### Admin
-- Platform-wide analytics dashboard
-- Seller approval / suspension
-- Product moderation (approve/reject)
-- Rider management
-- Revenue and commission reports
-- Audit log viewer
-- System health monitoring
+</div>
 
 ---
 
-## 🏗️ Architecture Overview
+## 💎 Design Aesthetic: Light Theme Liquid Glass
+
+NEXORA’s client interface is crafted according to a unified **Light Theme Liquid Glass** visual identity:
+- **Canvas Base:** High-clarity soft gray (`#f8fafc`) accented by fluid ambient color radial gradients.
+- **Translucent Glass Panels:** `backdrop-blur-md` surfaces with micro-borders (`rgba(255, 255, 255, 0.85)`) and multi-layer drop shadows.
+- **Accents:** Royal Sapphire (`#2563eb`) & Electric Indigo (`#4f46e5`) with vibrant interactive transitions.
+- **Internationalization:** Strict **100% English** copywriting across all client portals.
+
+---
+
+## 🚀 Key Functional Modules & Capabilities
+
+### 🛒 1. Customer Marketplace
+- **Dynamic Catalog:** Hierarchical category browsing, live text search, and attribute-based price recalculation.
+- **Product Variants:** Sizing, colors, and SKUs with live inventory verification.
+- **Dual-Mode Cart:** Redis-backed cart supporting anonymous guest sessions with seamless merging upon user login.
+- **Multi-Vendor Checkout:** Single customer payment transaction atomically splitting into vendor sub-orders.
+- **Live Order Tracking:** 5-step dynamic status pipeline (`pending` → `confirmed` → `preparing` → `ready_for_pickup` → `delivered`) with driver telematics.
+- **Universal Chat Hub:** Real-time messaging with merchants and assigned delivery drivers.
+- **Verified Reviews & Ratings:** Verified-purchase gate ensuring only buyers of delivered items can post reviews.
+
+### 🏪 2. Merchant Headquarters
+- **Storefront Customization:** Brand profile, banner, and logo management.
+- **Product Lifecycle:** Multi-stage lifecycle (`draft` → `pending_review` → `approved` / `rejected`).
+- **Inventory Controller:** SKU-level stock management with low-stock alerts and one-click restock modals.
+- **Fulfillment Pipeline:** Sub-order fulfillment queue with state transitions (`confirm` → `preparing` → `ready_for_pickup`).
+- **Coupon Promotion Engine:** Percentage and fixed discount promotions with minimum spend and atomic usage counters.
+- **Visual Analytics:** Interactive Recharts dashboards for revenue trends, order volume, and top products.
+- **Treasury & Withdrawals:** Available balance tracking and automated withdrawal payout requests.
+
+### 🛵 3. Hyperlocal Courier Network
+- **Courier Telematics Console:** Live online/offline dispatch toggle with real-time GPS simulation.
+- **Proximity-Based Auto-Assignment:** BullMQ queue workers search nearby riders within a 5km–15km radius via Redis `GEORADIUS` / `GEOSEARCH` with distributed assignment locks (`lock:assignment:${riderId}`).
+- **Task Lifecycle:** Step-by-step progress tracking (`assigned` → `en_route_pickup` → `picked_up` → `en_route_delivery` → `delivered`).
+- **Courier Wallet:** Automatic earnings credit upon delivery confirmation.
+
+### 🛡️ 4. Executive Platform Administration
+- **Executive Intelligence Dashboard:** Platform Gross Merchandise Value (GMV), platform fee commissions, active stores, active riders, and daily GMV trendlines.
+- **Merchant Compliance:** Approval and rejection workflows for new seller registrations.
+- **Product Moderation:** Quality and compliance inspection for vendor product submissions.
+- **Courier Fleet Oversight:** Rider verification, status inspection, and fleet management.
+- **Treasury Management:** Administrative review, approval, or rejection of merchant payouts with automated wallet refunds.
+- **Forensic Audit Explorer:** Immutable system audit trail tracking security-critical events with actor metadata.
+
+---
+
+## 🏗️ Technical Architecture
 
 ```
-                        Internet
-                           │
-                    ┌──────▼──────┐
-                    │    Nginx     │  (SSL, reverse proxy, load balancer)
-                    └──────┬──────┘
-                           │
-           ┌───────────────┼───────────────┐
-    ┌──────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
-    │  API Srv #1 │ │  API Srv #2 │ │  API Srv #N │
-    │  Express+WS │ │  Express+WS │ │  Express+WS │
-    └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
-           └───────────────┼───────────────┘
-                           │
-         ┌─────────────────┼─────────────────┐
-  ┌──────▼──────┐  ┌───────▼──────┐  ┌───────▼──────┐
-  │   MongoDB   │  │    Redis     │  │   BullMQ     │
-  │ Replica Set │  │ Cache+PubSub │  │   Workers    │
-  └─────────────┘  └──────────────┘  └──────────────┘
-```
-
-**Architecture:** Modular Monolith (designed for future microservice extraction)
-
----
-
-## 🧱 Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, TanStack Query, Zod, Socket.IO Client, Recharts |
-| **Backend** | Node.js, Express.js, TypeScript, MongoDB Native Driver |
-| **Realtime** | Socket.IO + Redis Pub/Sub Adapter |
-| **Queue** | BullMQ (Redis-backed) |
-| **Cache** | Redis (ioredis) |
-| **Database** | MongoDB (Atlas or Replica Set) |
-| **Payments** | Stripe (Payment Intents + Connect + Webhooks) |
-| **Search** | MongoDB Atlas Search (Lucene) |
-| **Storage** | Cloudinary |
-| **Maps** | Mapbox GL |
-| **Email** | Resend |
-| **Auth** | JWT (access in memory, refresh in HttpOnly cookie) |
-| **Infrastructure** | Docker, Docker Compose, Nginx, GitHub Actions |
-| **Observability** | Pino, Prometheus, Grafana, Sentry |
-| **Load Testing** | k6 |
-
----
-
-## 👥 User Roles
-
-| Role | Description |
-|---|---|
-| `SUPER_ADMIN` | Full platform control |
-| `ADMIN` | Seller/rider approval, product moderation, analytics |
-| `SELLER` | Manages own store, products, orders, inventory |
-| `DELIVERY_AGENT` | Accepts and fulfills delivery tasks |
-| `CUSTOMER` | Browses, orders, tracks deliveries |
-
----
-
-## 🔄 Core Workflows
-
-### Customer Order Flow
-```
-Browse → Add to Cart → Checkout (Stripe) → Webhook Confirms →
-Seller Notified → Seller Prepares → Rider Auto-Assigned →
-Pickup → Real-time Tracking → Delivered → Review
-```
-
-### Seller Onboarding
-```
-Register → Stripe Connect Onboarding → Admin Approval →
-Store Active → Create Products → Admin Moderation → Live
+                                  Internet
+                                     │
+                     ┌───────────────▼───────────────┐
+                     │    Nginx 1.25 Reverse Proxy    │
+                     │  (SSL, HSTS, Gzip, Rate Limit) │
+                     └───────────────┬───────────────┘
+                                     │
+             ┌───────────────────────┴───────────────────────┐
+             │                                               │
+             ▼ :3000                                         ▼ :5000
+    ┌─────────────────┐                             ┌─────────────────┐
+    │ NEXORA Frontend │                             │ NEXORA Backend  │
+    │  Next.js 14 App │                             │ Express 4.19 TS │
+    │   Liquid Glass  │                             │ Modular Monolith│
+    └─────────────────┘                             └────────┬────────┘
+                                                             │
+                  ┌───────────────────┬──────────────────────┴───────────────────┐
+                  ▼                   ▼                                          ▼
+         ┌─────────────────┐ ┌─────────────────┐                        ┌─────────────────┐
+         │ MongoDB 7.0 RS  │ │    Redis 7.2    │                        │   BullMQ 5.14   │
+         │  Transactions   │ │ Cache & PubSub  │                        │  Worker Queues  │
+         └─────────────────┘ └─────────────────┘                        └─────────────────┘
 ```
 
 ---
 
-## 📁 Repository Structure
+## 🧱 Repository Structure
 
 ```
 NEXORA/
 ├── apps/
-│   ├── frontend/               # Next.js application
-│   └── backend/                # Express.js modular monolith
-│       └── src/
-│           ├── modules/        # Feature modules
-│           ├── shared/         # Shared utilities
-│           └── infrastructure/ # DB, Redis, Queue, Socket
-├── docs/                       # Architecture documentation
-│   └── adr/                    # Architecture Decision Records
+│   ├── backend/                # Modular monolith Express API
+│   │   ├── src/
+│   │   │   ├── modules/        # 19 domain-driven feature modules
+│   │   │   ├── infrastructure/ # DB, Redis, BullMQ, Socket.IO, Metrics
+│   │   │   ├── shared/         # Middlewares, error classes, response helpers
+│   │   │   └── tests/          # 20 Vitest test suites (96 tests)
+│   │   └── README.md           # Detailed backend documentation
+│   └── frontend/               # Next.js 14 App Router application
+│       ├── app/                # Portals: Customer, Seller, Rider, Admin, Auth
+│       ├── components/         # Liquid Glass reusable components
+│       ├── providers/          # QueryClient & Socket.IO providers
+│       ├── lib/api/            # Typed API client functions
+│       └── README.md           # Detailed frontend documentation
+├── docs/                       # 17 Architectural specification documents & ADRs
 ├── infra/
-│   ├── docker/
-│   ├── nginx/
-│   └── k6/
-├── .github/workflows/
-├── docker-compose.yml
-├── .env.example
+│   ├── docker/                 # Production multi-stage Dockerfiles
+│   ├── nginx/                  # Nginx development and production configurations
+│   └── k6/                     # k6 automated load testing suite (smoke, browse, orders, auth)
+├── .github/workflows/          # GitHub Actions CI & CD workflows
+├── docker-compose.yml          # Development Docker stack
+├── docker-compose.prod.yml     # Production Docker stack with Certbot
+├── PHASE-TRACKER.md            # Master execution progress tracker (Phases 0 - 20)
 └── README.md
 ```
 
 ---
 
-## ⚙️ Local Setup
+## ⚡ Quickstart & Development
 
-### Prerequisites
-- Node.js 20+, Docker & Docker Compose
-
+### 1. Local Development
 ```bash
-# Clone
-git clone https://github.com/yourusername/nexora.git && cd nexora
+# Clone the repository
+git clone https://github.com/yourusername/nexora.git
+cd nexora
 
-# Copy env
-cp .env.example .env  # Fill in your values
+# Install monorepo dependencies
+npm install
 
-# Start infrastructure
-docker-compose up -d mongodb redis
+# Start local infrastructure (MongoDB Replica Set + Redis)
+docker-compose up -d mongodb mongo-init redis
 
-# Install and run
-npm install && npm run dev
+# Start backend (port 5000) and frontend (port 3000)
+npm run dev:backend
+npm run dev:frontend
+```
+
+### 2. Running Automated Tests
+```bash
+# Run backend test suites (Vitest)
+npm run test
+
+# Run TypeScript typechecks across both packages
+npm run typecheck
+```
+
+### 3. Running Load Tests (k6)
+```bash
+# Run smoke test
+k6 run -e BASE_URL=http://localhost:5000 infra/k6/scenarios/smoke.js
+
+# Run browse scenario
+k6 run -e BASE_URL=http://localhost:5000 infra/k6/scenarios/browse.js
+```
+
+### 4. Production Deployment (Docker Compose)
+```bash
+# Launch production container stack with SSL and Nginx
+docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
 ---
 
-## 🧪 Testing
+## 🔑 Demo Test Accounts Directory
 
-```bash
-npm run test                    # Unit tests
-npm run test:integration        # Integration tests
-npm run test:e2e               # E2E (Playwright)
-k6 run infra/k6/scenarios/baseline.js   # Load test
-```
+All accounts are pre-seeded with the password: `Password123!`
+
+| Role | Email | Name | Default Portal |
+|---|---|---|---|
+| **Customer** | `customer@nexora.com` | Alex Customer | `/profile`, `/cart`, `/orders` |
+| **Active Buyer** | `buyer@nexora.com` | Sarah Buyer | `/profile`, `/cart`, `/orders` |
+| **Merchant / Seller** | `seller@nexora.com` | David Merchant | `/seller/dashboard`, `/seller/products` |
+| **Vendor** | `vendor@nexora.com` | Elena Vendor | `/seller/dashboard`, `/seller/inventory` |
+| **Delivery Rider** | `rider@nexora.com` | Marco Rider | `/delivery/dashboard` |
+| **Courier** | `courier@nexora.com` | Liam Courier | `/delivery/dashboard` |
+| **Operations Admin** | `admin@nexora.com` | Operations Admin | `/admin/analytics` |
+| **Super Admin** | `superadmin@nexora.com` | Executive SuperAdmin | `/admin/analytics`, `/admin/audit-logs` |
+| **Personal Account** | `ataurrahman24707@gmail.com` | Ataur Rahman | `/admin/analytics` |
 
 ---
 
-## 📚 Documentation
+## 📈 Observability & Prometheus Metrics
 
-| Document | Description |
-|---|---|
-| [00-PROJECT-PLAN](docs/00-PROJECT-PLAN.md) | Project overview, goals, MVP scope |
-| [01-SYSTEM-ARCHITECTURE](docs/01-SYSTEM-ARCHITECTURE.md) | Full architecture design |
-| [02-DATABASE-DESIGN](docs/02-DATABASE-DESIGN.md) | MongoDB schema, indexes, relationships |
-| [03-API-ROUTE-DESIGN](docs/03-API-ROUTE-DESIGN.md) | All API endpoints |
-| [04-AUTH-RBAC-DESIGN](docs/04-AUTH-RBAC-DESIGN.md) | Auth flow, JWT, permissions |
-| [05-REALTIME-ARCHITECTURE](docs/05-REALTIME-ARCHITECTURE.md) | Socket.IO design |
-| [06-PAYMENT-ARCHITECTURE](docs/06-PAYMENT-ARCHITECTURE.md) | Stripe integration |
-| [07-DELIVERY-ARCHITECTURE](docs/07-DELIVERY-ARCHITECTURE.md) | Rider and delivery system |
-| [08-CACHING-REDIS-DESIGN](docs/08-CACHING-REDIS-DESIGN.md) | Redis cache strategy |
-| [09-QUEUE-BULLMQ-DESIGN](docs/09-QUEUE-BULLMQ-DESIGN.md) | BullMQ job queues |
-| [10-LOAD-BALANCER-DESIGN](docs/10-LOAD-BALANCER-DESIGN.md) | Nginx and scaling |
-| [11-SECURITY-DESIGN](docs/11-SECURITY-DESIGN.md) | Security architecture |
-| [12-DEPLOYMENT-ARCHITECTURE](docs/12-DEPLOYMENT-ARCHITECTURE.md) | Docker, CI/CD |
-| [13-TESTING-STRATEGY](docs/13-TESTING-STRATEGY.md) | Testing approach |
-| [14-LOAD-TESTING-K6](docs/14-LOAD-TESTING-K6.md) | k6 scenarios |
-| [15-MONITORING-OBSERVABILITY](docs/15-MONITORING-OBSERVABILITY.md) | Logging, metrics |
-| [16-IMPLEMENTATION-PLAN](docs/16-IMPLEMENTATION-PLAN.md) | Phase-by-phase plan |
+NEXORA exposes standard Prometheus metrics out of the box:
+- `GET /metrics` & `GET /api/v1/health/metrics`
+  - `http_request_duration_seconds` (Histogram by method, route, and status code)
+  - `nexora_active_orders_total` (Gauge of active non-terminal orders)
+  - `nexora_payments_total` (Counter by status: succeeded, failed, refunded)
+  - `bullmq_job_duration_seconds` (Histogram by queue and job name)
+  - `bullmq_job_failures_total` (Counter of failed asynchronous tasks)
+  - `nexora_cache_hits_total` & `nexora_cache_misses_total` (Redis cache metrics)
 
 ---
 
 ## 📄 License
 
-MIT License.
+This project is licensed under the MIT License.

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, LoginPayload, loginUser, logoutUser, refreshToken } from "../lib/api/auth";
@@ -28,17 +28,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Silent refresh on initial page mount
+  // Synchronous init from localStorage, then verify with backend
   useEffect(() => {
     let mounted = true;
     async function initAuth() {
+      if (typeof window !== "undefined") {
+        try {
+          const storedUser = localStorage.getItem("nexora_auth_user");
+          if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (mounted) setUser(parsed);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       try {
         const res = await refreshToken();
         if (mounted && res?.user) {
           setUser(res.user);
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem("nexora_auth_user", JSON.stringify(res.user));
+              document.cookie = `nexora_role=${res.user.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+            } catch {}
+          }
         }
       } catch {
-        if (mounted) setUser(null);
+        // If refresh fails, try profile verification with stored access token
+        try {
+          const profile = await getProfile();
+          if (mounted && profile) {
+            setUser(profile);
+            if (typeof window !== "undefined") {
+              try {
+                localStorage.setItem("nexora_auth_user", JSON.stringify(profile));
+                document.cookie = `nexora_role=${profile.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+              } catch {}
+            }
+          }
+        } catch {
+          // Genuinely unauthenticated
+          if (mounted) {
+            setUser(null);
+            if (typeof window !== "undefined") {
+              try {
+                localStorage.removeItem("nexora_auth_user");
+                localStorage.removeItem("nexora_access_token");
+                document.cookie = "nexora_token=; path=/; max-age=0; SameSite=Lax";
+                document.cookie = "nexora_role=; path=/; max-age=0; SameSite=Lax";
+              } catch {}
+            }
+          }
+        }
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -52,12 +95,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (payload: LoginPayload): Promise<User> => {
     const res = await loginUser(payload);
     setUser(res.user);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("nexora_auth_user", JSON.stringify(res.user));
+        document.cookie = `nexora_role=${res.user.role}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+      } catch {}
+    }
     return res.user;
   };
 
   const logout = async (): Promise<void> => {
-    await logoutUser();
-    setUser(null);
+    try {
+      await logoutUser();
+    } catch (err) {
+      console.warn("Backend logout request warning:", err);
+    } finally {
+      setUser(null);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("nexora_auth_user");
+          localStorage.removeItem("nexora_access_token");
+          document.cookie = "nexora_token=; path=/; max-age=0; SameSite=Lax";
+          document.cookie = "nexora_role=; path=/; max-age=0; SameSite=Lax";
+          sessionStorage.clear();
+        } catch {
+          // ignore
+        }
+        window.location.href = "/login";
+      }
+    }
   };
 
   return (

@@ -4,16 +4,27 @@ import "./globals.css";
 import { QueryProvider } from "../providers/QueryProvider";
 import { AuthProvider } from "../providers/AuthProvider";
 import { CartProvider } from "../providers/CartProvider";
+import { SocketProvider } from "../providers/SocketProvider";
 import { CartDrawer } from "../components/cart/CartDrawer";
+import { SupportChatWidget } from "../components/chat/SupportChatWidget";
 import { LiquidBackground } from "../components/ui/LiquidBackground";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "NEXORA — Multi-Vendor Commerce & Hyperlocal Logistics",
+  title: "ZEVO — Multi-Vendor Commerce & Hyperlocal Logistics",
   description: "High-performance multi-vendor marketplace with real-time delivery tracking, multi-vendor cart routing, and instant payouts.",
-  keywords: ["marketplace", "multi-vendor", "hyperlocal", "logistics", "delivery", "ecommerce", "real-time tracking"],
-  authors: [{ name: "NEXORA Core Team" }],
+  keywords: ["zevo", "marketplace", "multi-vendor", "hyperlocal", "logistics", "delivery", "ecommerce", "real-time tracking"],
+  authors: [{ name: "ZEVO Core Team" }],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/images/branding/zevo-icon.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/images/branding/zevo-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export const viewport: Viewport = {
@@ -28,16 +39,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased selection:bg-blue-600 selection:text-white bg-[#f8fafc] text-slate-900 min-h-screen relative`}>
+      <body className={`${inter.variable} antialiased selection:bg-[#00A86B] selection:text-white bg-white text-[#0A504A] min-h-screen relative`}>
         <LiquidBackground />
         <QueryProvider>
           <AuthProvider>
-            <CartProvider>
-              <div className="relative z-10 min-h-screen flex flex-col">
-                {children}
-              </div>
-              <CartDrawer />
-            </CartProvider>
+            <SocketProvider>
+              <CartProvider>
+                <div className="relative z-10 min-h-screen flex flex-col">
+                  {children}
+                </div>
+                <CartDrawer />
+                <SupportChatWidget />
+              </CartProvider>
+            </SocketProvider>
           </AuthProvider>
         </QueryProvider>
       </body>
