@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../../providers/AuthProvider";
 import { AdminDashboardShell } from "../../components/admin/AdminDashboardShell";
 import { ZevoIcon, ZevoLogo } from "../../components/branding/ZevoLogo";
+import { ZevoLoader } from "../../components/branding/ZevoLoader";
 import { ShieldAlert, Loader2, Lock } from "lucide-react";
 import Link from "next/link";
 
@@ -31,15 +32,7 @@ export default function AdminRootLayout({
 
   // 1. Loading / Authenticating state
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#073A36] text-white flex flex-col items-center justify-center gap-5">
-        <ZevoLogo variant="full" inverted size="lg" subtitle="Security Gate" priority />
-        <div className="flex items-center gap-2 text-xs font-mono text-emerald-200/80">
-          <Loader2 className="w-4 h-4 text-[#A2E4B8] animate-spin" />
-          <span>Verifying Administrator Credentials...</span>
-        </div>
-      </div>
-    );
+    return <ZevoLoader size="responsive" />;
   }
 
   // 2. Unauthenticated or Unauthorized Gate (NEVER render dashboard)

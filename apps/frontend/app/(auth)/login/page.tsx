@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../../../hooks/useAuth";
 import { getMySellerProfile } from "../../../lib/api/sellers";
 import { ZevoLogo } from "../../../components/branding/ZevoLogo";
+import { ZevoLoader } from "../../../components/branding/ZevoLoader";
 import { AuthIllustrationDesk } from "../../../components/auth/AuthIllustrationDesk";
 import {
   Lock,
@@ -107,25 +108,7 @@ function LoginForm() {
   };
 
   if (isLoading || (isAuthenticated && user)) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#F7F7F2]">
-        <div className="p-8 rounded-3xl bg-white border border-[#D1E7D8] shadow-sm flex flex-col items-center gap-4 text-center max-w-sm w-full animate-fade-in">
-          <div className="w-12 h-12 rounded-2xl bg-[#00A86B] text-white flex items-center justify-center shadow-md shadow-[#00A86B]/30">
-            <Loader2 className="w-6 h-6 animate-spin" />
-          </div>
-          <div>
-            <h3 className="text-base font-serif font-bold text-[#0A504A]">
-              {isAuthenticated ? "Session Active" : "Verifying session..."}
-            </h3>
-            <p className="text-xs text-[#0A504A]/70 mt-1 leading-relaxed">
-              {isAuthenticated
-                ? "You are already logged in. Redirecting to your dashboard..."
-                : "Please wait while we authenticate your session."}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return <ZevoLoader size="responsive" />;
   }
 
   return (

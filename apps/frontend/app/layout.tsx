@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "../providers/QueryProvider";
 import { AuthProvider } from "../providers/AuthProvider";
@@ -9,7 +9,12 @@ import { CartDrawer } from "../components/cart/CartDrawer";
 import { SupportChatWidget } from "../components/chat/SupportChatWidget";
 import { LiquidBackground } from "../components/ui/LiquidBackground";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "ZEVO — Multi-Vendor Commerce & Hyperlocal Logistics",
@@ -39,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased selection:bg-[#00A86B] selection:text-white bg-white text-[#0A504A] min-h-screen relative`}>
+      <body className={`${manrope.variable} font-sans antialiased selection:bg-[#00A86B] selection:text-white bg-white text-[#0A504A] min-h-screen relative`}>
         <LiquidBackground />
         <QueryProvider>
           <AuthProvider>
