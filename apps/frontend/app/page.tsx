@@ -122,15 +122,14 @@ export interface HeroSlideItem {
 const HERO_SLIDES: HeroSlideItem[] = [
   {
     id: "01",
-    tag: "NEW SEASON 2024",
-    titleLine1: "Own Your",
-    titleLine2: "Signature Style",
-    subtitle: "Timeless pieces. Modern silhouettes. Made for the way you live.",
-    buttonText: "EXPLORE NOW",
+    tag: "100% ORGANIC & FARM-FRESH",
+    titleLine1: "Pure Organic,",
+    titleLine2: "Farm-Fresh Daily",
+    subtitle: "Handpicked crisp greens, cold-pressed juices, artisan pantry staples, and everyday groceries delivered to your door in minutes.",
+    buttonText: "SHOP FRESH HARVEST",
     buttonLink: "/products",
-    // SLIDE 1 IMAGE: Replace with your custom image URL
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1200&auto=format&fit=crop",
-    alt: "Own Your Signature Style",
+    image: "https://i.ibb.co.com/m5DF31j3/759dfa81-c4a2-4918-a322-6df9ac1566d9.jpg",
+    alt: "Pure Organic Farm-Fresh Daily Groceries",
     circleBg: "#E8F8EE",
   },
   {
@@ -1123,8 +1122,8 @@ export default function FashionHomePage() {
           {/* Left Model Image */}
           <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop"
-              alt="Style List Cover"
+              src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=600&auto=format&fit=crop"
+              alt="Fresh Organic Harvest"
               className="w-full h-full object-cover"
             />
           </div>
@@ -1135,10 +1134,10 @@ export default function FashionHomePage() {
               Get 10% Off Your First Order
             </span>
             <h2 className="text-3xl font-serif text-[#0A504A] mb-2">
-              Join Our Style List
+              Join Our Fresh Harvest Club
             </h2>
             <p className="text-xs sm:text-sm text-[#0A504A]/70 max-w-md mb-6 leading-relaxed">
-              Sign up for exclusive offers, new seasonal arrivals, and personal styling inspiration delivered directly to your inbox.
+              Sign up for exclusive farm deals, new seasonal harvest alerts, and 10% off voucher for your first organic grocery order.
             </p>
 
             {newsletterSuccess ? (
