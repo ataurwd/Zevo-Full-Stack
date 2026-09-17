@@ -117,6 +117,7 @@ export interface HeroSlideItem {
   image: string; // <-- Change this image URL to your own image
   alt: string;
   circleBg: string;
+  objectPosition?: string;
 }
 
 const HERO_SLIDES: HeroSlideItem[] = [
@@ -131,6 +132,7 @@ const HERO_SLIDES: HeroSlideItem[] = [
     image: "/images/hero-slide-1.jpg",
     alt: "Zevo Kitchen Expert Services and Gourmet Meal Kits",
     circleBg: "#E8F8EE",
+    objectPosition: "center 20%",
   },
   {
     id: "02",
@@ -143,6 +145,7 @@ const HERO_SLIDES: HeroSlideItem[] = [
     image: "/images/hero-slide-2.jpg",
     alt: "Pure Organic Farm-Fresh Daily Groceries",
     circleBg: "#E5ECE9",
+    objectPosition: "center 15%",
   },
   {
     id: "03",
@@ -155,6 +158,7 @@ const HERO_SLIDES: HeroSlideItem[] = [
     image: "/images/hero-slide-3.png",
     alt: "Wholesome Goodness Delivered Daily",
     circleBg: "#E8EFE9",
+    objectPosition: "center 20%",
   },
 ];
 
@@ -351,7 +355,7 @@ export default function FashionHomePage() {
             <div className="lg:col-span-6 relative flex items-center justify-center min-h-[380px] sm:min-h-[460px] lg:min-h-[520px]">
               {/* Circular Backdrop Disc */}
               <div
-                className="absolute w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[460px] lg:h-[460px] rounded-full"
+                className="absolute w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[520px] lg:h-[520px] rounded-full"
                 style={{
                   backgroundColor: currentSlide.circleBg,
                   transition: "background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1)"
@@ -360,7 +364,7 @@ export default function FashionHomePage() {
 
               {/* Minimalist Emerald Leaves Botanical Branch */}
               <svg
-                className="absolute right-4 sm:right-8 lg:right-12 top-4 sm:top-8 w-24 sm:w-32 lg:w-36 h-auto pointer-events-none opacity-85 z-0"
+                className="absolute right-0 sm:right-2 lg:right-4 top-2 sm:top-4 w-24 sm:w-32 lg:w-36 h-auto pointer-events-none opacity-85 z-0"
                 viewBox="0 0 120 220"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -381,12 +385,13 @@ export default function FashionHomePage() {
               </svg>
 
               {/* Model Image with Soft Bottom Blend & Smooth Fade Transition */}
-              <div className="relative z-10 w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] h-[360px] sm:h-[460px] lg:h-[500px] flex items-end justify-center overflow-hidden">
+              <div className="relative z-10 w-full max-w-[440px] sm:max-w-[500px] lg:max-w-[560px] xl:max-w-[590px] h-[360px] sm:h-[460px] lg:h-[500px] flex items-center justify-center overflow-hidden rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl">
                 <img
                   key={currentSlide.id}
                   src={currentSlide.image}
                   alt={currentSlide.alt}
-                  className="max-h-full w-auto object-cover object-top drop-shadow-xl rounded-2xl lg:rounded-3xl select-none pointer-events-none animate-hero-slide-in"
+                  style={{ objectPosition: currentSlide.objectPosition || "center 20%" }}
+                  className="w-full h-full object-cover select-none pointer-events-none animate-hero-slide-in"
                 />
               </div>
             </div>
