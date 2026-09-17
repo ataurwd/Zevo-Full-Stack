@@ -9,6 +9,7 @@ import {
   adminRejectSeller,
   SellerProfile,
 } from "../../../lib/api/sellers";
+import { broadcastBadgeUpdate } from "../../../hooks/useAdminBadges";
 import {
   Store,
   CheckCircle2,
@@ -99,11 +100,13 @@ export default function AdminSellersPage() {
       const updated = await adminApproveSeller(id);
       setSellers((prev) => prev.map((s) => (s.id === id ? updated : s)));
       setFeedback({ type: "success", text: `Merchant "${name}" has been approved!` });
+      broadcastBadgeUpdate();
     } catch {
       setSellers((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: "approved" as any } : s))
       );
       setFeedback({ type: "success", text: `Merchant "${name}" verified successfully!` });
+      broadcastBadgeUpdate();
     } finally {
       setActionLoadingId(null);
     }
@@ -118,6 +121,7 @@ export default function AdminSellersPage() {
       const updated = await adminRejectSeller(rejectingSeller.id, rejectReason);
       setSellers((prev) => prev.map((s) => (s.id === rejectingSeller.id ? updated : s)));
       setFeedback({ type: "success", text: `Seller application rejected.` });
+      broadcastBadgeUpdate();
       setRejectingSeller(null);
       setRejectReason("");
     } catch {
@@ -125,6 +129,7 @@ export default function AdminSellersPage() {
         prev.map((s) => (s.id === rejectingSeller.id ? { ...s, status: "rejected" as any } : s))
       );
       setFeedback({ type: "success", text: `Application status updated.` });
+      broadcastBadgeUpdate();
       setRejectingSeller(null);
     } finally {
       setActionLoadingId(null);
@@ -178,8 +183,8 @@ export default function AdminSellersPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         <div className="p-5 rounded-2xl bg-white border border-[#D1E7D8] shadow-2xs">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[#0A504A]/70">Registered Merchants</span>
-          <div className="text-2xl font-serif font-black text-[#0A504A] mt-1.5">48 Stores</div>
-          <span className="text-[10px] text-emerald-600 font-semibold mt-1 inline-block">↑ +6 onboarded this month</span>
+          <div className="text-2xl font-serif font-black text-[#0A504A] mt-1.5">{sellers.length} Stores</div>
+          <span className="text-[10px] text-emerald-600 font-semibold mt-1 inline-block">Verified marketplace partners</span>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#D1E7D8] shadow-2xs">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[#0A504A]/70">Pending KYC Approval</span>

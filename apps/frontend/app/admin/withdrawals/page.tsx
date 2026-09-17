@@ -9,6 +9,7 @@ import {
   adminRejectWithdrawal,
   WithdrawalItem,
 } from "../../../lib/api/withdrawals";
+import { broadcastBadgeUpdate } from "../../../hooks/useAdminBadges";
 import {
   Wallet,
   DollarSign,
@@ -48,7 +49,7 @@ export default function AdminWithdrawalsPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await adminListWithdrawals(activeTab === "all" ? undefined : activeTab);
+      const data = await adminListWithdrawals(undefined, 100);
       setWithdrawals(data?.withdrawals || []);
     } catch (err: any) {
       setFeedback({ type: "error", text: err.message || "Failed to load withdrawals from database" });
@@ -59,7 +60,7 @@ export default function AdminWithdrawalsPage() {
 
   useEffect(() => {
     loadData();
-  }, [activeTab]);
+  }, []);
 
   const handleApprove = async (id: string, storeName: string, amount: number) => {
     setActionLoadingId(id);
@@ -73,6 +74,7 @@ export default function AdminWithdrawalsPage() {
       setWithdrawals((prev) =>
         prev.map((w) => (w._id === id ? { ...w, status: "approved" as any } : w))
       );
+      broadcastBadgeUpdate();
       setFeedback({
         type: "success",
         text: `Disbursement of $${(amount / 100).toFixed(2)} to "${storeName}" has been authorized.`,
@@ -102,6 +104,7 @@ export default function AdminWithdrawalsPage() {
             : w
         )
       );
+      broadcastBadgeUpdate();
       setFeedback({
         type: "success",
         text: `Payout request for "${rejectingItem.seller_name}" rejected. Balance refunded to merchant.`,
@@ -114,6 +117,15 @@ export default function AdminWithdrawalsPage() {
       setActionLoadingId(null);
     }
   };
+
+  const pendingItems = withdrawals.filter((w) => w.status === "pending");
+  const pendingAmountCents = pendingItems.reduce((sum, w) => sum + (w.amount || 0), 0);
+  const pendingCount = pendingItems.length;
+
+  const disbursedItems = withdrawals.filter(
+    (w) => w.status === "approved" || (w.status as any) === "processed"
+  );
+  const disbursedAmountCents = disbursedItems.reduce((sum, w) => sum + (w.amount || 0), 0);
 
   const filteredWithdrawals = withdrawals.filter((w) => {
     const matchStatus =
@@ -176,12 +188,18 @@ export default function AdminWithdrawalsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-2xl bg-white border border-[#D1E7D8] shadow-2xs">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[#0A504A]/70">Pending Authorization</span>
-          <div className="text-2xl font-serif font-black text-amber-600 mt-1.5">$2,340.00</div>
-          <span className="text-[10px] text-[#0A504A]/70 mt-1 inline-block">2 requests awaiting review</span>
+          <div className="text-2xl font-serif font-black text-amber-600 mt-1.5">
+            ${(pendingAmountCents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+          <span className="text-[10px] text-[#0A504A]/70 mt-1 inline-block">
+            {pendingCount} {pendingCount === 1 ? "request" : "requests"} awaiting review
+          </span>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#D1E7D8] shadow-2xs">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[#0A504A]/70">Disbursed This Month</span>
-          <div className="text-2xl font-serif font-black text-[#0A504A] mt-1.5">$64,120.00</div>
+          <div className="text-2xl font-serif font-black text-[#0A504A] mt-1.5">
+            ${(disbursedAmountCents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
           <span className="text-[10px] text-emerald-600 font-semibold mt-1 inline-block">100% SLA compliance</span>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#D1E7D8] shadow-2xs">

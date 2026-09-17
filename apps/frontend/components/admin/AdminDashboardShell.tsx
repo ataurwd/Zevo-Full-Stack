@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../../hooks/useAuth";
+import { useAdminBadges } from "../../hooks/useAdminBadges";
 import { ZevoLogo } from "../branding/ZevoLogo";
 import {
   LayoutDashboard,
@@ -151,7 +152,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         label: "Users",
         href: "/admin/users",
         icon: Users,
-        badge: "2,847",
         subRoutes: [
           { label: "All Users", href: "/admin/users" },
           { label: "Create User", href: "/admin/users/create" },
@@ -162,8 +162,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         label: "Merchants",
         href: "/admin/sellers",
         icon: Store,
-        badge: "4 new",
-        badgeColor: "bg-[#00A86B] text-white",
         subRoutes: [
           { label: "Pending", href: "/admin/sellers/pending" },
           { label: "Active", href: "/admin/sellers/active" },
@@ -209,8 +207,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         label: "Inventory",
         href: "/admin/inventory",
         icon: Box,
-        badge: "3 low",
-        badgeColor: "bg-rose-500 text-white",
         subRoutes: [
           { label: "Stock Overview", href: "/admin/inventory" },
           { label: "Low Stock", href: "/admin/inventory/low-stock" },
@@ -223,8 +219,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         label: "Orders",
         href: "/admin/orders",
         icon: ShoppingCart,
-        badge: "48",
-        badgeColor: "bg-[#00A86B] text-white",
         subRoutes: [
           { label: "Pending", href: "/admin/orders/pending" },
           { label: "Confirmed", href: "/admin/orders/confirmed" },
@@ -268,8 +262,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         label: "Withdrawals",
         href: "/admin/withdrawals",
         icon: Wallet,
-        badge: "6 req",
-        badgeColor: "bg-amber-500 text-white",
         subRoutes: [
           { label: "Pending", href: "/admin/withdrawals/pending" },
           { label: "Approved", href: "/admin/withdrawals/approved" },
@@ -331,7 +323,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         label: "Support & Chat",
         href: "/admin/support",
         icon: Headphones,
-        badge: "2 open",
         subRoutes: [
           { label: "Tickets Queue", href: "/admin/support/tickets" },
           { label: "Live Chat Console", href: "/admin/chat" },
@@ -421,6 +412,74 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isSupport = user?.role === "SUPPORT";
   const activeNavGroups = isSupport ? SUPPORT_NAV_GROUPS : ADMIN_NAV_GROUPS;
+  const { data: badgeCounts } = useAdminBadges();
+
+  const dynamicNavGroups = useMemo(() => {
+    return activeNavGroups.map((group) => ({
+      ...group,
+      items: group.items.map((item) => {
+        if (!badgeCounts) return item;
+
+        if (item.id === "users") {
+          return {
+            ...item,
+            badge: badgeCounts.users > 0 ? badgeCounts.users.toLocaleString() : undefined,
+            badgeColor: "bg-[#00A86B] text-white",
+          };
+        }
+
+        if (item.id === "sellers") {
+          const pending = badgeCounts.merchants.pending;
+          const total = badgeCounts.merchants.total;
+          return {
+            ...item,
+            badge: pending > 0 ? `${pending} new` : (total > 0 ? `${total}` : undefined),
+            badgeColor: "bg-[#00A86B] text-white",
+          };
+        }
+
+        if (item.id === "inventory") {
+          const low = badgeCounts.inventory.low_stock;
+          return {
+            ...item,
+            badge: low > 0 ? `${low} low` : undefined,
+            badgeColor: "bg-rose-500 text-white",
+          };
+        }
+
+        if (item.id === "orders") {
+          const total = badgeCounts.orders.total;
+          return {
+            ...item,
+            badge: total > 0 ? `${total}` : undefined,
+            badgeColor: "bg-[#00A86B] text-white",
+          };
+        }
+
+        if (item.id === "withdrawals") {
+          const pending = badgeCounts.withdrawals.pending;
+          return {
+            ...item,
+            badge: pending > 0 ? `${pending} req` : undefined,
+            badgeColor: "bg-amber-500 text-white",
+          };
+        }
+
+        if (item.id === "products") {
+          const pendingReview = badgeCounts.products.pending_review;
+          if (pendingReview > 0) {
+            return {
+              ...item,
+              badge: `${pendingReview} review`,
+              badgeColor: "bg-amber-500 text-white",
+            };
+          }
+        }
+
+        return item;
+      }),
+    }));
+  }, [activeNavGroups, badgeCounts]);
 
   useEffect(() => {
     if (isSupport) {
@@ -452,7 +511,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   };
 
   // Filter items if user types in search
-  const filteredGroups = activeNavGroups.map((group) => {
+  const filteredGroups = dynamicNavGroups.map((group) => {
     if (!searchQuery.trim()) return group;
     const lower = searchQuery.toLowerCase();
     const matched = group.items.filter(

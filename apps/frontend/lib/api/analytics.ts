@@ -55,3 +55,38 @@ export async function getAdminAnalytics(days = 30): Promise<AdminAnalyticsData> 
   );
   return res.data;
 }
+
+export interface AdminBadgeCounts {
+  users: number;
+  merchants: {
+    pending: number;
+    total: number;
+  };
+  inventory: {
+    low_stock: number;
+    total: number;
+  };
+  orders: {
+    total: number;
+    pending: number;
+  };
+  withdrawals: {
+    pending: number;
+    total: number;
+  };
+  stores: {
+    total: number;
+  };
+  products: {
+    total: number;
+    pending_review: number;
+  };
+}
+
+export async function getAdminBadgeCounts(): Promise<AdminBadgeCounts> {
+  const res = await apiFetch<{ success: boolean; data: AdminBadgeCounts }>(
+    "/analytics/admin/badges"
+  );
+  return res.data;
+}
+

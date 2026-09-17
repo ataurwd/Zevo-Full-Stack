@@ -32,6 +32,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { PaymentCardForm } from "../../components/checkout/PaymentCardForm";
 
 const rawStripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const isStripeConfigured =
@@ -163,6 +164,37 @@ function CheckoutForm() {
     if (!cart || !cart.items || cart.items.length === 0) {
       setErrorMsg("Your cart is empty. Please add products to cart before checkout.");
       return;
+    }
+
+    if (paymentMethod === "card" && !isStripeConfigured) {
+      const cleanCard = cardNumber.replace(/\s/g, "");
+      const isAmex = /^3[47]/.test(cleanCard);
+      const minLength = isAmex ? 15 : 16;
+
+      if (!cardHolder.trim() || cardHolder.trim().length < 2) {
+        setErrorMsg("Please enter the cardholder full name as it appears on your card.");
+        return;
+      }
+      if (cleanCard.length < minLength) {
+        setErrorMsg(`Please enter a valid ${minLength}-digit card number.`);
+        return;
+      }
+      const cleanExpiry = cardExpiry.replace(/\s/g, "");
+      if (cleanExpiry.length < 5 || !cleanExpiry.includes("/")) {
+        setErrorMsg("Please enter a valid expiration date in MM / YY format.");
+        return;
+      }
+      const [monthStr] = cleanExpiry.split("/");
+      const month = parseInt(monthStr, 10);
+      if (isNaN(month) || month < 1 || month > 12) {
+        setErrorMsg("Please enter a valid expiration month (01 to 12).");
+        return;
+      }
+      const cvcMin = isAmex ? 4 : 3;
+      if (cardCvc.length < cvcMin) {
+        setErrorMsg(`Please enter a valid ${cvcMin}-digit security code (CVC).`);
+        return;
+      }
     }
 
     const selectedAddr = addresses.find((a) => a.id === selectedAddressId);
@@ -630,83 +662,17 @@ function CheckoutForm() {
                       </div>
                     </div>
                   ) : (
-                    /* Fallback / Pre-configuration state with real empty inputs */
-                    <div className="space-y-3.5">
-                      <div className="p-3 rounded-xl bg-emerald-50/80 border border-[#D1E7D8] text-xs text-[#0A504A]">
-                        <div className="flex items-center gap-1.5 font-bold mb-0.5">
-                          <Sparkles className="w-3.5 h-3.5 text-[#00A86B]" />
-                          <span>Stripe Card Payment System Ready</span>
-                        </div>
-                        <p className="text-[11px] text-gray-600 leading-relaxed">
-                          Enter your card details below. To activate live Stripe Elements validation, add your <code className="bg-white px-1 py-0.5 rounded text-[10px] font-mono border border-emerald-200">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code> in <code className="bg-white px-1 py-0.5 rounded text-[10px] font-mono border border-emerald-200">apps/frontend/.env.local</code>.
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-700 block mb-1">
-                          Cardholder Full Name
-                        </label>
-                        <input
-                          type="text"
-                          value={cardHolder}
-                          onChange={(e) => setCardHolder(e.target.value)}
-                          placeholder="e.g. Cardholder Name"
-                          className="w-full px-3.5 py-2 rounded-xl bg-white border border-gray-300 text-xs font-medium text-gray-900 focus:outline-none focus:border-[#00A86B]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] font-bold text-gray-700 block mb-1">
-                          Card Number
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(e.target.value)}
-                            placeholder="•••• •••• •••• ••••"
-                            maxLength={19}
-                            className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-white border border-gray-300 font-mono text-xs font-medium text-gray-900 focus:outline-none focus:border-[#00A86B]"
-                          />
-                          <CreditCard className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[11px] font-bold text-gray-700 block mb-1">
-                            Expiration Date
-                          </label>
-                          <input
-                            type="text"
-                            value={cardExpiry}
-                            onChange={(e) => setCardExpiry(e.target.value)}
-                            placeholder="MM/YY"
-                            maxLength={5}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white border border-gray-300 font-mono text-xs text-gray-900 focus:outline-none focus:border-[#00A86B]"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] font-bold text-gray-700 block mb-1">
-                            Security CVC
-                          </label>
-                          <input
-                            type="text"
-                            value={cardCvc}
-                            onChange={(e) => setCardCvc(e.target.value)}
-                            placeholder="CVC"
-                            maxLength={4}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white border border-gray-300 font-mono text-xs text-gray-900 focus:outline-none focus:border-[#00A86B]"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    <PaymentCardForm
+                      cardHolder={cardHolder}
+                      setCardHolder={setCardHolder}
+                      cardNumber={cardNumber}
+                      setCardNumber={setCardNumber}
+                      cardExpiry={cardExpiry}
+                      setCardExpiry={setCardExpiry}
+                      cardCvc={cardCvc}
+                      setCardCvc={setCardCvc}
+                    />
                   )}
-
-                  <div className="flex items-center gap-2 pt-1 text-[11px] text-gray-600">
-                    <ShieldCheck className="w-4 h-4 text-[#00A86B] shrink-0" />
-                    <span>Funds remain securely held in customer escrow until delivery is fulfilled and inspected.</span>
-                  </div>
                 </div>
               ) : (
                 <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
