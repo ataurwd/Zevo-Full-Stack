@@ -122,27 +122,26 @@ export interface HeroSlideItem {
 const HERO_SLIDES: HeroSlideItem[] = [
   {
     id: "01",
+    tag: "ZEVO KITCHEN & GOURMET MEALS",
+    titleLine1: "Chef-Crafted Meals,",
+    titleLine2: "Family Dining",
+    subtitle: "Explore expert-led meal plans, farm-fresh ingredients, and gourmet meal kits curated for wholesome family living.",
+    buttonText: "EXPLORE MEAL KITS",
+    buttonLink: "/products",
+    image: "/images/hero-slide-1.jpg",
+    alt: "Zevo Kitchen Expert Services and Gourmet Meal Kits",
+    circleBg: "#E8F8EE",
+  },
+  {
+    id: "02",
     tag: "100% ORGANIC & FARM-FRESH",
     titleLine1: "Pure Organic,",
     titleLine2: "Farm-Fresh Daily",
     subtitle: "Handpicked crisp greens, cold-pressed juices, artisan pantry staples, and everyday groceries delivered to your door in minutes.",
     buttonText: "SHOP FRESH HARVEST",
     buttonLink: "/products",
-    image: "https://i.ibb.co.com/m5DF31j3/759dfa81-c4a2-4918-a322-6df9ac1566d9.jpg",
+    image: "/images/hero-slide-2.jpg",
     alt: "Pure Organic Farm-Fresh Daily Groceries",
-    circleBg: "#E8F8EE",
-  },
-  {
-    id: "02",
-    tag: "FRESH HARVEST 2024",
-    titleLine1: "Farm-Fresh",
-    titleLine2: "Daily Essentials",
-    subtitle: "Handpicked organic produce, artisan pantry goods, and everyday staples delivered fresh to your door.",
-    buttonText: "EXPLORE NOW",
-    buttonLink: "/products",
-    // SLIDE 2 IMAGE: Replaced with user's uploaded fresh supermarket image
-    image: "/images/hero-slide-2.png",
-    alt: "Farm-Fresh Daily Essentials",
     circleBg: "#E5ECE9",
   },
   {
@@ -153,7 +152,6 @@ const HERO_SLIDES: HeroSlideItem[] = [
     subtitle: "Farm-fresh organic greens, free-range poultry, and sustainable staples curated for your healthy home.",
     buttonText: "EXPLORE NOW",
     buttonLink: "/products",
-    // SLIDE 3 IMAGE: Replaced with user's uploaded fresh market image
     image: "/images/hero-slide-3.png",
     alt: "Wholesome Goodness Delivered Daily",
     circleBg: "#E8EFE9",
