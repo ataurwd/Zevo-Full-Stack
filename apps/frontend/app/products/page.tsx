@@ -55,6 +55,28 @@ function ShopCatalogContent() {
   });
   const isLoading = isProductsLoading || isCategoriesLoading;
 
+  // Dynamic minimum and maximum price calculated directly from available products
+  const { catalogMinPrice, catalogMaxPrice } = useMemo(() => {
+    if (!products || products.length === 0) {
+      return { catalogMinPrice: 0, catalogMaxPrice: 400 };
+    }
+    let min = Infinity;
+    let max = -Infinity;
+    products.forEach((p) => {
+      const price = (p.base_price || 0) / 100;
+      if (price > 0) {
+        if (price < min) min = price;
+        if (price > max) max = price;
+      }
+    });
+    if (min === Infinity) min = 0;
+    if (max === -Infinity || max <= min) max = min + 50;
+    return {
+      catalogMinPrice: Math.floor(min),
+      catalogMaxPrice: Math.ceil(max),
+    };
+  }, [products]);
+
   // Filter States initialized from URL Search Params
   const [searchQuery, setSearchQuery] = useState(
     () => searchParams.get("q") || searchParams.get("search") || ""
@@ -64,12 +86,28 @@ function ShopCatalogContent() {
   );
   const [minPrice, setMinPrice] = useState<number>(() => {
     const p = searchParams.get("min_price");
-    return p ? Number(p) || 12 : 12;
+    return p ? Number(p) || 0 : 0;
   });
   const [maxPrice, setMaxPrice] = useState<number>(() => {
     const p = searchParams.get("max_price");
-    return p ? Number(p) || 400 : 400;
+    return p ? Number(p) || 0 : 0;
   });
+  const [hasUserChangedPrice, setHasUserChangedPrice] = useState<boolean>(() => {
+    return searchParams.has("max_price") || searchParams.has("min_price");
+  });
+
+  // Sync min/max price with dynamic product catalog bounds when products load
+  useEffect(() => {
+    if (!hasUserChangedPrice && catalogMaxPrice > 0) {
+      if (!searchParams.has("min_price")) {
+        setMinPrice(catalogMinPrice);
+      }
+      if (!searchParams.has("max_price")) {
+        setMaxPrice(catalogMaxPrice);
+      }
+    }
+  }, [catalogMinPrice, catalogMaxPrice, searchParams, hasUserChangedPrice]);
+
   const [selectedWeights, setSelectedWeights] = useState<string[]>(() => {
     const w = searchParams.get("weight");
     return w ? w.split(",").filter(Boolean) : [];
@@ -104,11 +142,17 @@ function ShopCatalogContent() {
 
     if (searchParams.has("min_price")) {
       const min = Number(searchParams.get("min_price"));
-      if (!isNaN(min)) setMinPrice(min);
+      if (!isNaN(min)) {
+        setMinPrice(min);
+        setHasUserChangedPrice(true);
+      }
     }
     if (searchParams.has("max_price")) {
       const max = Number(searchParams.get("max_price"));
-      if (!isNaN(max)) setMaxPrice(max);
+      if (!isNaN(max)) {
+        setMaxPrice(max);
+        setHasUserChangedPrice(true);
+      }
     }
     if (searchParams.has("weight")) {
       setSelectedWeights(searchParams.get("weight")!.split(",").filter(Boolean));
@@ -138,8 +182,8 @@ function ShopCatalogContent() {
     const params = new URLSearchParams();
     if (selectedCategory) params.set("category", selectedCategory);
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
-    if (minPrice !== 12) params.set("min_price", String(minPrice));
-    if (maxPrice !== 400) params.set("max_price", String(maxPrice));
+    if (hasUserChangedPrice && minPrice > catalogMinPrice) params.set("min_price", String(minPrice));
+    if (hasUserChangedPrice && maxPrice > 0 && maxPrice < catalogMaxPrice) params.set("max_price", String(maxPrice));
     if (selectedWeights.length > 0) params.set("weight", selectedWeights.join(","));
     if (selectedBrands.length > 0) params.set("brand", selectedBrands.join(","));
     if (selectedTypes.length > 0) params.set("type", selectedTypes.join(","));
@@ -157,6 +201,9 @@ function ShopCatalogContent() {
     searchQuery,
     minPrice,
     maxPrice,
+    catalogMinPrice,
+    catalogMaxPrice,
+    hasUserChangedPrice,
     selectedWeights,
     selectedBrands,
     selectedTypes,
@@ -321,9 +368,11 @@ function ShopCatalogContent() {
     }
 
     // 3. Price Range Filter
+    const activeMin = minPrice > 0 ? Math.max(minPrice, catalogMinPrice) : catalogMinPrice;
+    const activeMax = maxPrice > 0 ? Math.min(maxPrice, catalogMaxPrice) : catalogMaxPrice;
     result = result.filter((p) => {
-      const priceVal = p.base_price / 100;
-      return priceVal >= minPrice && priceVal <= maxPrice;
+      const priceVal = (p.base_price || 0) / 100;
+      return priceVal >= activeMin && priceVal <= activeMax;
     });
 
     // 4. Weight Filter
@@ -426,8 +475,9 @@ function ShopCatalogContent() {
   const resetAllFilters = () => {
     setSearchQuery("");
     setSelectedCategory("");
-    setMinPrice(12);
-    setMaxPrice(400);
+    setMinPrice(catalogMinPrice);
+    setMaxPrice(catalogMaxPrice);
+    setHasUserChangedPrice(false);
     setSelectedWeights([]);
     setSelectedBrands([]);
     setSelectedTypes([]);
@@ -435,10 +485,9 @@ function ShopCatalogContent() {
   };
 
   const hasActiveFilters =
-    searchQuery ||
-    selectedCategory ||
-    minPrice !== 12 ||
-    maxPrice !== 400 ||
+    Boolean(searchQuery) ||
+    Boolean(selectedCategory) ||
+    (hasUserChangedPrice && (minPrice > catalogMinPrice || (maxPrice > 0 && maxPrice < catalogMaxPrice))) ||
     selectedWeights.length > 0 ||
     selectedBrands.length > 0 ||
     selectedTypes.length > 0;
@@ -649,48 +698,72 @@ function ShopCatalogContent() {
                 Price
               </h3>
               <div className="space-y-3">
-                {/* Interactive Range Slider Track */}
-                <div className="relative pt-2 pb-1">
-                  <div className="h-1.5 w-full bg-gray-200 rounded-full relative overflow-hidden">
-                    <div
-                      className="absolute h-full bg-[#00A86B] rounded-full"
-                      style={{
-                        left: `${((minPrice - 12) / (400 - 12)) * 100}%`,
-                        right: `${100 - ((maxPrice - 12) / (400 - 12)) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <input
-                    type="range"
-                    min="12"
-                    max="400"
-                    value={minPrice}
-                    onChange={(e) => {
-                      const val = Math.min(Number(e.target.value), maxPrice - 5);
-                      setMinPrice(val);
-                    }}
-                    className="absolute inset-0 w-full opacity-0 cursor-pointer pointer-events-auto h-5"
-                  />
-                  <input
-                    type="range"
-                    min="12"
-                    max="400"
-                    value={maxPrice}
-                    onChange={(e) => {
-                      const val = Math.max(Number(e.target.value), minPrice + 5);
-                      setMaxPrice(val);
-                    }}
-                    className="absolute inset-0 w-full opacity-0 cursor-pointer pointer-events-auto h-5"
-                  />
-                </div>
+                {/* Interactive Range Slider Track with Visible Dot */}
+                {(() => {
+                  const currentMax = maxPrice > 0 ? Math.min(maxPrice, catalogMaxPrice) : catalogMaxPrice;
+                  const pricePercent = catalogMaxPrice > catalogMinPrice
+                    ? Math.min(100, Math.max(0, ((currentMax - catalogMinPrice) / (catalogMaxPrice - catalogMinPrice)) * 100))
+                    : 100;
 
-                {/* Range Label matching reference: "Range : $12.00 - $400.00" */}
-                <p className="text-xs text-gray-600 font-medium">
-                  Range :{" "}
-                  <span className="font-bold text-gray-900">
-                    ${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}
-                  </span>
-                </p>
+                  return (
+                    <div className="relative pt-3 pb-2 group select-none">
+                      {/* Background Visual Track */}
+                      <div className="h-2 w-full bg-[#E8F3ED] rounded-full relative overflow-visible">
+                        {/* Active Filled Green Bar */}
+                        <div
+                          className="absolute top-0 left-0 h-full bg-[#00A86B] rounded-full transition-all duration-75"
+                          style={{ width: `${pricePercent}%` }}
+                        />
+
+                        {/* Draggable Dot Handle (Thumb) */}
+                        <div
+                          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-white border-[2.5px] border-[#00A86B] rounded-full shadow-md shadow-[#00A86B]/30 group-hover:scale-110 active:scale-125 transition-transform flex items-center justify-center pointer-events-none z-10"
+                          style={{ left: `${pricePercent}%` }}
+                        >
+                          <div className="w-1.5 h-1.5 bg-[#00A86B] rounded-full" />
+                        </div>
+                      </div>
+
+                      {/* Native Range Input on top for full mouse, drag, touch & keyboard control */}
+                      <input
+                        type="range"
+                        min={catalogMinPrice}
+                        max={catalogMaxPrice}
+                        step={1}
+                        value={currentMax}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setMaxPrice(val);
+                          setHasUserChangedPrice(true);
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                        aria-label="Filter products by price"
+                      />
+                    </div>
+                  );
+                })()}
+
+                {/* Range Label: Dynamic "Range : $15.00 - $350.00" */}
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-600 font-medium">
+                    Range :{" "}
+                    <span className="font-bold text-gray-900 font-mono">
+                      ${catalogMinPrice.toFixed(2)} - ${(maxPrice > 0 ? Math.min(maxPrice, catalogMaxPrice) : catalogMaxPrice).toFixed(2)}
+                    </span>
+                  </p>
+                  {hasUserChangedPrice && maxPrice < catalogMaxPrice && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMaxPrice(catalogMaxPrice);
+                        setHasUserChangedPrice(false);
+                      }}
+                      className="text-[11px] font-semibold text-[#00A86B] hover:text-[#0A504A] transition-colors"
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -1001,14 +1074,14 @@ function ShopCatalogContent() {
                     </button>
                   </span>
                 )}
-                {(minPrice !== 12 || maxPrice !== 400) && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-800 shadow-2xs">
-                    <span>Price: ${minPrice} - ${maxPrice}</span>
+                {hasUserChangedPrice && maxPrice > 0 && maxPrice < catalogMaxPrice && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 shadow-2xs">
+                    <span>Price: Up to ${maxPrice.toFixed(2)}</span>
                     <button
                       type="button"
                       onClick={() => {
-                        setMinPrice(12);
-                        setMaxPrice(400);
+                        setMaxPrice(catalogMaxPrice);
+                        setHasUserChangedPrice(false);
                       }}
                       className="hover:text-red-600 transition-colors p-0.5"
                       title="Reset price"
