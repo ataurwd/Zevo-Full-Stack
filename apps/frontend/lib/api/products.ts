@@ -8,6 +8,7 @@ export interface ProductVariant {
   price: number; // in cents
   compare_at_price?: number | null; // in cents
   weight_grams?: number | null;
+  quantity?: number | null;
   is_active: boolean;
 }
 
@@ -27,18 +28,30 @@ export interface ProductItem {
   description: string;
   status: "draft" | "pending_review" | "approved" | "rejected" | "suspended";
   rejection_reason?: string | null;
-  images: ProductImage[];
+  images: any[];
   tags: string[];
   attributes: Array<{ name: string; value: string }>;
   variants: ProductVariant[];
   base_price: number; // in cents
   compare_at_price?: number | null; // in cents
   inventory_quantity?: number | null;
+  shipping?: {
+    weight?: number;
+    weight_unit?: "kg" | "lb" | "g";
+    dimensions?: {
+      length?: number;
+      breadth?: number;
+      width?: number;
+      unit?: "in" | "cm";
+    };
+  } | null;
+  selling_type?: "in_store" | "online" | "both" | null;
+  sku?: string;
   rating_avg: number;
   rating_count: number;
   total_sold: number;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export interface CreateProductInput {
@@ -209,6 +222,11 @@ export async function adminRejectProduct(id: string, reason: string): Promise<Pr
       body: JSON.stringify({ reason }),
     }
   );
+  return res.data;
+}
+
+export async function adminGetProductById(id: string): Promise<ProductItem> {
+  const res = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/admin/${id}`);
   return res.data;
 }
 

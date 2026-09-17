@@ -416,12 +416,18 @@ function AdminLiveOrderDetail({ orderId }: { orderId: string }) {
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-white border border-[#D1E7D8] text-[#0A504A]">
                         Status: {sub.status.replace(/_/g, " ")}
                       </span>
-                      {!sub.assigned_rider && (
+                      {assignedRider ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E8F8EE] text-[#00A86B] border border-[#A2E4B8] flex items-center gap-1">
+                          <Bike className="w-3 h-3" />
+                          <span>Courier: {(sub.assigned_rider || assignedRider)?.name || "Assigned"}</span>
+                        </span>
+                      ) : (
                         <button
-                          onClick={() => openAssignModal(sub)}
-                          className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#00A86B] text-white hover:bg-[#008f5b] transition-colors cursor-pointer"
+                          onClick={() => openAssignModal(primarySubOrder || sub)}
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#00A86B] text-white hover:bg-[#008f5b] transition-colors cursor-pointer flex items-center gap-1"
                         >
-                          Assign Rider
+                          <Bike className="w-3 h-3" />
+                          <span>Assign Order Courier</span>
                         </button>
                       )}
                     </div>
@@ -561,9 +567,9 @@ function AdminLiveOrderDetail({ orderId }: { orderId: string }) {
                   <Bike className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-[#0A504A]">Assign Courier Rider</h3>
+                  <h3 className="font-black text-sm text-[#0A504A]">Assign Courier for Entire Order</h3>
                   <p className="text-[11px] text-[#0A504A]/70">
-                    Order destination: <strong className="text-[#0A504A]">{order.delivery_address?.city || "Dhaka"}</strong>
+                    Order #{order.order_number} ({subOrders.length} package{subOrders.length > 1 ? "s" : ""}) • Destination: <strong className="text-[#0A504A]">{order.delivery_address?.city || "Dhaka"}</strong>
                   </p>
                 </div>
               </div>

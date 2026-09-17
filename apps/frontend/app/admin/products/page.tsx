@@ -822,13 +822,13 @@ export default function AdminProductsPage() {
                           )}
 
                           {/* EDIT Button */}
-                          <button
-                            onClick={() => openEditModal(prod)}
-                            className="p-1.5 rounded-xl bg-[#E8F8EE] hover:bg-[#E8F8EE] text-[#0A504A] hover:text-[#00A86B] transition-colors cursor-pointer"
+                          <Link
+                            href={`/admin/products/${prod.id}/edit`}
+                            className="p-1.5 rounded-xl bg-[#E8F8EE] hover:bg-[#A2E4B8] text-[#0A504A] hover:text-[#00A86B] transition-colors"
                             title="Edit Product"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
-                          </button>
+                          </Link>
 
                           {/* DELETE Button */}
                           <button

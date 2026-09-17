@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   Loader2,
   ArrowLeft,
+  Edit3,
 } from "lucide-react";
 import { getProductUrl } from "../../../lib/utils/slug";
 import { broadcastProductUpdate } from "../../../hooks/useProducts";
@@ -334,6 +335,14 @@ export default function SellerProductsPage() {
                             <ExternalLink className="w-3 h-3" />
                           </Link>
                         )}
+
+                        <Link
+                          href={`/seller/products/${prod.id}/edit`}
+                          className="p-1.5 rounded-xl bg-white hover:bg-[#E8F8EE] text-[#0A504A]/70 hover:text-[#00A86B] border border-[#D1E7D8] transition-colors"
+                          title="Edit Product"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </Link>
 
                         <button
                           onClick={() => handleDelete(prod.id, prod.name)}

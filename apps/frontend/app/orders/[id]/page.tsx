@@ -22,6 +22,7 @@ import {
   Phone,
   Check,
   RefreshCw,
+  Package,
 } from "lucide-react";
 import { getOrderById, cancelOrder, Order } from "../../../lib/api/orders";
 import { getAccessToken } from "../../../lib/api/client";
@@ -46,6 +47,7 @@ export default function OrderDetailPage() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [selectedPackageId, setSelectedPackageId] = useState<string>("all");
 
   // Live real-time delivery telematics state
   const [liveDelivery, setLiveDelivery] = useState<{
@@ -220,8 +222,20 @@ export default function OrderDetailPage() {
 
   if (!order) return null;
 
-  // Resolve assigned rider from order or sub-orders
-  const assignedRider = order.assigned_rider || order.sub_orders?.[0]?.assigned_rider || null;
+  // Multi-package state
+  const hasMultiplePackages = (order.sub_orders?.length || 0) > 1;
+  const deliveredCount = order.sub_orders?.filter((s) => s.status === "delivered").length || 0;
+  const totalPackages = order.sub_orders?.length || 1;
+  const allSubOrdersDelivered = hasMultiplePackages && deliveredCount === totalPackages;
+  const isPartiallyDelivered = hasMultiplePackages && deliveredCount > 0 && deliveredCount < totalPackages;
+
+  // Selected sub-order target (or null for all packages overview)
+  const selectedSub = selectedPackageId !== "all"
+    ? order.sub_orders?.find((s) => (s.id || (s as any)._id) === selectedPackageId) || null
+    : null;
+
+  // Resolve assigned rider from selected package or overall order
+  const assignedRider = selectedSub?.assigned_rider || order.assigned_rider || order.sub_orders?.[0]?.assigned_rider || null;
   const primarySub = order.sub_orders?.[0] || null;
 
   // Helper date-time formatters
@@ -247,24 +261,46 @@ export default function OrderDetailPage() {
     }
   };
 
-  // Milestone Timestamps
-  const placedTime = formatTime(order.created_at);
-  const placedDate = formatDate(order.created_at);
+  // Harmonize effective status for active view (package vs overall order)
+  let effectiveStatus = order.status;
+  if (selectedSub) {
+    effectiveStatus = selectedSub.status === "delivered" ? "completed" : (selectedSub.status as any);
+  } else {
+    if (allSubOrdersDelivered) {
+      effectiveStatus = "completed";
+    } else if (isPartiallyDelivered) {
+      effectiveStatus = "in_transit";
+    } else if (primarySub?.status && (effectiveStatus === "pending" || effectiveStatus === "confirmed")) {
+      if (primarySub.status === "delivered") effectiveStatus = "completed";
+      else if (primarySub.status !== "pending") effectiveStatus = primarySub.status as any;
+    }
+  }
 
-  const confirmedTime = formatTime(order.confirmed_at || primarySub?.confirmed_at || order.ready_at || primarySub?.ready_at);
-  const confirmedDate = formatDate(order.confirmed_at || primarySub?.confirmed_at || order.ready_at || primarySub?.ready_at);
+  // Milestone Timestamps for active view
+  const targetDoc = selectedSub || order;
+  const placedTime = formatTime(targetDoc.created_at || order.created_at);
+  const placedDate = formatDate(targetDoc.created_at || order.created_at);
 
-  const assignedTime = formatTime(assignedRider?.assigned_at || order.ready_at || primarySub?.ready_at);
-  const assignedDate = formatDate(assignedRider?.assigned_at || order.ready_at || primarySub?.ready_at);
+  const confirmedTime = formatTime(selectedSub ? (selectedSub.confirmed_at || selectedSub.ready_at) : (order.confirmed_at || primarySub?.confirmed_at || order.ready_at || primarySub?.ready_at));
+  const confirmedDate = formatDate(selectedSub ? (selectedSub.confirmed_at || selectedSub.ready_at) : (order.confirmed_at || primarySub?.confirmed_at || order.ready_at || primarySub?.ready_at));
 
-  const pickedUpTime = formatTime(order.picked_up_at || primarySub?.picked_up_at);
-  const pickedUpDate = formatDate(order.picked_up_at || primarySub?.picked_up_at);
+  const assignedTime = formatTime(assignedRider?.assigned_at || (selectedSub ? selectedSub.ready_at : (order.ready_at || primarySub?.ready_at)));
+  const assignedDate = formatDate(assignedRider?.assigned_at || (selectedSub ? selectedSub.ready_at : (order.ready_at || primarySub?.ready_at)));
 
-  const inTransitTime = formatTime((order as any).in_transit_at || (primarySub as any)?.in_transit_at);
-  const inTransitDate = formatDate((order as any).in_transit_at || (primarySub as any)?.in_transit_at);
+  const pickedUpTime = formatTime(selectedSub ? selectedSub.picked_up_at : (order.picked_up_at || primarySub?.picked_up_at));
+  const pickedUpDate = formatDate(selectedSub ? selectedSub.picked_up_at : (order.picked_up_at || primarySub?.picked_up_at));
 
-  const deliveredTime = formatTime(order.delivered_at || primarySub?.delivered_at);
-  const deliveredDate = formatDate(order.delivered_at || primarySub?.delivered_at);
+  const inTransitTime = formatTime((targetDoc as any).in_transit_at || (primarySub as any)?.in_transit_at);
+  const inTransitDate = formatDate((targetDoc as any).in_transit_at || (primarySub as any)?.in_transit_at);
+
+  // Delivered timestamp is strictly gated by whether active view is delivered/completed
+  const isViewDelivered = effectiveStatus === "completed" || effectiveStatus === "delivered";
+  const deliveredTime = isViewDelivered
+    ? formatTime(selectedSub ? selectedSub.delivered_at : (order.delivered_at || (allSubOrdersDelivered ? primarySub?.delivered_at : null)))
+    : null;
+  const deliveredDate = isViewDelivered
+    ? formatDate(selectedSub ? selectedSub.delivered_at : (order.delivered_at || (allSubOrdersDelivered ? primarySub?.delivered_at : null)))
+    : null;
 
   // Stepper steps configuration
   const steps = [
@@ -299,7 +335,7 @@ export default function OrderDetailPage() {
     {
       label: "Out for Delivery",
       key: "in_transit",
-      time: inTransitTime || (order.status === "in_transit" ? "In Transit" : null),
+      time: inTransitTime || (effectiveStatus === "in_transit" ? "In Transit" : null),
       date: inTransitDate,
       desc: "En route to destination",
     },
@@ -308,7 +344,9 @@ export default function OrderDetailPage() {
       key: "completed",
       time: deliveredTime,
       date: deliveredDate,
-      desc: "Delivered to recipient",
+      desc: isPartiallyDelivered && !selectedSub
+        ? `${deliveredCount} of ${totalPackages} packages delivered`
+        : "Delivered to recipient",
     },
   ];
 
@@ -331,18 +369,10 @@ export default function OrderDetailPage() {
       case "cancelled":
         return -1;
       default:
-        // If assigned rider exists, at least step 2
         if (assignedRider) return 2;
         return 0;
     }
   };
-
-  // Harmonize effective order status with suborder status if suborder is further ahead
-  let effectiveStatus = order.status;
-  if (primarySub?.status && (effectiveStatus === "pending" || effectiveStatus === "confirmed")) {
-    if (primarySub.status === "delivered") effectiveStatus = "completed";
-    else if (primarySub.status !== "pending") effectiveStatus = primarySub.status as any;
-  }
 
   const currentStep = getStepIndex(effectiveStatus);
   const isCancelled = effectiveStatus === "cancelled";
@@ -440,6 +470,8 @@ export default function OrderDetailPage() {
                   className={`px-3 py-1 rounded-full text-xs font-bold border ${
                     isCancelled
                       ? "bg-rose-50 text-rose-700 border-rose-200"
+                      : isPartiallyDelivered && selectedPackageId === "all"
+                      ? "bg-teal-50 text-teal-800 border-teal-300"
                       : effectiveStatus === "completed" || effectiveStatus === "delivered"
                       ? "bg-[#E8F8EE] text-[#00A86B] border-[#A2E4B8]"
                       : effectiveStatus === "picked_up"
@@ -449,7 +481,9 @@ export default function OrderDetailPage() {
                       : "bg-[#E8F8EE] text-[#0A504A] border-[#A2E4B8]"
                   }`}
                 >
-                  {effectiveStatus.toUpperCase().replace(/_/g, " ")}
+                  {isPartiallyDelivered && selectedPackageId === "all"
+                    ? `PARTIALLY DELIVERED (${deliveredCount}/${totalPackages} DELIVERED)`
+                    : effectiveStatus.toUpperCase().replace(/_/g, " ")}
                 </span>
               </div>
               <p className="text-xs text-[#0A504A]/70 mt-1">
@@ -471,13 +505,15 @@ export default function OrderDetailPage() {
           {/* Stepper with Live Milestones & Exact Timestamps */}
           {!isCancelled ? (
             <div className="p-6 sm:p-8 border-b border-[#D1E7D8] bg-[#E8F8EE]/30">
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xs font-bold text-[#0A504A]/70 uppercase tracking-wider">
                     Live Fulfillment Stepper & Tracking Timeline
                   </h3>
                   <p className="text-[11px] text-[#0A504A]/60 mt-0.5">
-                    Updated automatically in real time whenever courier rider updates package status.
+                    {selectedSub
+                      ? `Viewing tracking for Package ${selectedSub.order_number} (${selectedSub.store_name || "Store"}).`
+                      : "Updated automatically in real time whenever courier rider updates package status."}
                   </p>
                 </div>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-[#00A86B]">
@@ -485,6 +521,80 @@ export default function OrderDetailPage() {
                   <span>Real-Time Telemetry Live</span>
                 </span>
               </div>
+
+              {/* Package Switcher Tabs for Multi-Vendor Orders */}
+              {hasMultiplePackages && (
+                <div className="mb-6 p-3.5 rounded-2xl bg-white border border-[#D1E7D8] shadow-2xs">
+                  <div className="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-[#D1E7D8]/60 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-[#00A86B]" />
+                      <span className="text-xs font-bold text-[#0A504A] uppercase tracking-wider">
+                        Multi-Vendor Shipments ({totalPackages} Packages)
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-[#0A504A]/70 font-medium">
+                      Select a package below to inspect its dedicated tracking:
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPackageId("all")}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                        selectedPackageId === "all"
+                          ? "bg-[#00A86B] text-white shadow-sm ring-2 ring-[#00A86B]/20"
+                          : "bg-[#F8FAF9] border border-[#D1E7D8] text-[#0A504A] hover:bg-[#E8F8EE]"
+                      }`}
+                    >
+                      <span>Entire Order</span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          selectedPackageId === "all"
+                            ? "bg-white/20 text-white"
+                            : "bg-emerald-100 text-emerald-800"
+                        }`}
+                      >
+                        {deliveredCount}/{totalPackages} Delivered
+                      </span>
+                    </button>
+
+                    {order.sub_orders?.map((sub, idx) => {
+                      const isSubDelivered = sub.status === "delivered";
+                      const subId = sub.id || (sub as any)._id || String(idx);
+                      const isSelected = selectedPackageId === subId;
+
+                      return (
+                        <button
+                          key={subId}
+                          type="button"
+                          onClick={() => setSelectedPackageId(subId)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                            isSelected
+                              ? "bg-[#0A504A] text-white shadow-sm ring-2 ring-[#0A504A]/20"
+                              : "bg-[#F8FAF9] border border-[#D1E7D8] text-[#0A504A] hover:bg-[#E8F8EE]"
+                          }`}
+                        >
+                          <span>Package {idx + 1}: {sub.store_name || `Store #${idx + 1}`}</span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              isSubDelivered
+                                ? isSelected
+                                  ? "bg-[#00A86B] text-white"
+                                  : "bg-emerald-100 text-[#00A86B]"
+                                : isSelected
+                                ? "bg-amber-400 text-black"
+                                : "bg-amber-100 text-amber-800"
+                            }`}
+                          >
+                            {isSubDelivered ? "Delivered" : sub.status.replace(/_/g, " ")}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Progress Line and Steps */}
               <div className="relative">
@@ -527,13 +637,13 @@ export default function OrderDetailPage() {
                             <div className="flex items-center justify-between gap-2 flex-wrap">
                               <span
                                 className={`text-xs font-bold ${
-                                  isDone ? "text-[#0A504A]" : "text-[#0A504A]/50"
+                                   isDone ? "text-[#0A504A]" : "text-[#0A504A]/50"
                                 }`}
                               >
                                 {step.label}
                               </span>
 
-                              {step.time ? (
+                              {step.time && isDone ? (
                                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-100/70 border border-emerald-200 text-[#0A504A] font-mono text-[10px] font-bold shrink-0">
                                   <Clock className="w-2.5 h-2.5 text-[#00A86B]" />
                                   <span>{step.time}</span>
@@ -609,7 +719,7 @@ export default function OrderDetailPage() {
                           </span>
 
                           {/* Exact Status Timestamp */}
-                          {step.time ? (
+                          {step.time && isDone ? (
                             <div className="mt-1 flex flex-col items-center">
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100/70 border border-emerald-200 text-[#0A504A] font-mono text-[10px] font-bold">
                                 <Clock className="w-3 h-3 text-[#00A86B]" />
