@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import { ZevoLogo } from "../components/branding/ZevoLogo";
 import { useCart } from "../providers/CartProvider";
 import { useProducts } from "../hooks/useProducts";
@@ -1168,130 +1169,9 @@ export default function FashionHomePage() {
       </section>
 
       {/* ====================================================================
-          8. EDITORIAL FASHION FOOTER
+          8. EDITORIAL FOOTER
           ==================================================================== */}
-      <footer className="w-full bg-[#0A504A] text-white pt-16 pb-12 mt-12 border-t border-[#00A86B]/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-[#00A86B]/40">
-            {/* Brand Col */}
-            <div className="md:col-span-2 space-y-4">
-              <Link href="/" className="inline-block">
-                <ZevoLogo variant="full" inverted size="lg" subtitle="Atelier & Fashion" />
-              </Link>
-              <p className="text-xs text-[#A2E4B8]/80 max-w-sm leading-relaxed">
-                Timeless fashion for every moment. Designed with precision, comfort, and quiet luxury in mind.
-              </p>
-            </div>
-
-            {/* Shop Col */}
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#A2E4B8] mb-4">
-                Shop
-              </h4>
-              <ul className="space-y-2.5 text-xs text-[#A2E4B8]/70">
-                <li>
-                  <Link href="/products" className="hover:text-white transition-colors">
-                    All Products
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?sort=newest" className="hover:text-white transition-colors">
-                    New Arrivals
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?category=women" className="hover:text-white transition-colors">
-                    Women
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?category=men" className="hover:text-white transition-colors">
-                    Men
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products?category=sale" className="hover:text-white transition-colors">
-                    Sale
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Customer Care */}
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#A2E4B8] mb-4">
-                Customer Care
-              </h4>
-              <ul className="space-y-2.5 text-xs text-[#A2E4B8]/70">
-                <li>
-                  <Link href="/chat" className="hover:text-white transition-colors">
-                    Live Concierge Chat
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/orders" className="hover:text-white transition-colors">
-                    Order Tracking
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products" className="hover:text-white transition-colors">
-                    Shipping & Delivery
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="hover:text-white transition-colors">
-                    Merchant Portal
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* About Us */}
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#A2E4B8] mb-4">
-                About Us
-              </h4>
-              <ul className="space-y-2.5 text-xs text-[#A2E4B8]/70">
-                <li>
-                  <span className="hover:text-white transition-colors cursor-pointer">
-                    Our Story
-                  </span>
-                </li>
-                <li>
-                  <span className="hover:text-white transition-colors cursor-pointer">
-                    Sustainability
-                  </span>
-                </li>
-                <li>
-                  <span className="hover:text-white transition-colors cursor-pointer">
-                    Careers
-                  </span>
-                </li>
-                <li>
-                  <span className="hover:text-white transition-colors cursor-pointer">
-                    Press & Media
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#A2E4B8]/60">
-            <p>© 2026 ZEVO Atelier. All rights reserved.</p>
-            <div className="flex items-center gap-6">
-              <span className="hover:text-white transition-colors cursor-pointer">
-                Privacy Policy
-              </span>
-              <span className="hover:text-white transition-colors cursor-pointer">
-                Terms of Service
-              </span>
-              <span className="hover:text-white transition-colors cursor-pointer">
-                Cookie Preferences
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* ====================================================================
           LOOKBOOK MODAL OVERLAY
