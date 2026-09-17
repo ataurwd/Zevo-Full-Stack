@@ -25,10 +25,12 @@ import {
   Maximize2,
   Minimize2,
 } from "lucide-react";
+import { useCart } from "../../providers/CartProvider";
 
 export function SupportChatWidget() {
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuth();
+  const { isDrawerOpen } = useCart();
 
   const [isOpen, setIsOpen] = useState(false);
   const [conversation, setConversation] = useState<ConversationItem | null>(null);
@@ -38,8 +40,8 @@ export function SupportChatWidget() {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Hide the floating widget on admin/rider chat portals to avoid duplicate overlapping chat windows
-  const isExcludedPage = pathname.startsWith("/admin/chat");
+  // Hide the floating widget on admin/rider chat portals and when CartDrawer is open
+  const isExcludedPage = pathname.startsWith("/admin/chat") || isDrawerOpen;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -155,7 +157,7 @@ export function SupportChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-40">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <button

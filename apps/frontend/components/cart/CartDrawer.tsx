@@ -78,7 +78,7 @@ export function CartDrawer() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-[80] overflow-hidden">
       {/* Dimmed backdrop */}
       <div
         onClick={closeDrawer}
