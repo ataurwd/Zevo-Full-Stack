@@ -237,10 +237,10 @@ function LoginForm() {
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickFill("ataurrahman24707@gmail.com", "Password123!")}
-                className="px-2 py-1.5 rounded-lg bg-white hover:bg-[#E8F8EE] border border-[#D1E7D8] hover:border-[#00A86B] text-[11px] font-bold text-[#00A86B] transition-all shadow-2xs text-center truncate cursor-pointer"
+                onClick={() => handleQuickFill("support@nexora.com", "Password123!")}
+                className="px-2 py-1.5 rounded-lg bg-white hover:bg-[#E8F8EE] border border-[#D1E7D8] hover:border-[#00A86B] text-[11px] font-semibold text-[#0A504A] hover:text-[#00A86B] transition-all shadow-2xs text-center cursor-pointer"
               >
-                ⭐ My Account
+                🎧 Support Agent
               </button>
             </div>
           </div>
