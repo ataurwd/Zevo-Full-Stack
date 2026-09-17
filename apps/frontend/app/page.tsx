@@ -89,7 +89,7 @@ const HERO_SLIDES: HeroSlideItem[] = [
     // SLIDE 1 IMAGE: Replace with your custom image URL
     image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1200&auto=format&fit=crop",
     alt: "Own Your Signature Style",
-    circleBg: "#EFE6DC",
+    circleBg: "#E8F8EE",
   },
   {
     id: "02",
@@ -214,10 +214,10 @@ export default function FashionHomePage() {
       )}
 
       {/* ====================================================================
-          1. HERO SECTION (Editorial 3-Slide Slider matching reference design)
+          1. HERO SECTION (Editorial 3-Slide Slider with Zevo Brand Colors)
           ==================================================================== */}
       <section
-        className="relative w-full bg-[#FAF7F2] overflow-hidden border-b border-[#F0EAE1]"
+        className="relative w-full bg-gradient-to-b from-[#F2FBF6] via-[#FAFDFB] to-white overflow-hidden border-b border-[#D1E7D8]"
         onMouseEnter={() => setIsSliderHovered(true)}
         onMouseLeave={() => setIsSliderHovered(false)}
       >
@@ -227,19 +227,19 @@ export default function FashionHomePage() {
             <div className="lg:col-span-5 flex flex-col justify-center py-2 lg:pr-4 z-10">
               {/* Eyebrow Tag - animated on slide change */}
               <div key={currentSlide.id + "-tag"} className="mb-3 sm:mb-4 animate-hero-fade-up" style={{ animationDelay: "0ms" }}>
-                <span className="inline-block text-xs sm:text-sm font-bold tracking-[0.2em] text-[#C2542D] uppercase">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#E8F8EE] text-[#00A86B] border border-[#A2E4B8] text-xs font-bold tracking-[0.18em] uppercase shadow-2xs">
                   {currentSlide.tag}
                 </span>
               </div>
 
               {/* Editorial Title */}
-              <h1 key={currentSlide.id + "-title"} className="text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#18181B] tracking-tight leading-[1.08] mb-4 sm:mb-5 font-sans animate-hero-fade-up" style={{ animationDelay: "60ms" }}>
+              <h1 key={currentSlide.id + "-title"} className="text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0A504A] tracking-tight leading-[1.08] mb-4 sm:mb-5 font-sans animate-hero-fade-up" style={{ animationDelay: "60ms" }}>
                 <span className="block">{currentSlide.titleLine1}</span>
                 <span className="block">{currentSlide.titleLine2}</span>
               </h1>
 
               {/* Subtitle */}
-              <p key={currentSlide.id + "-subtitle"} className="text-sm sm:text-base text-gray-600 font-normal leading-relaxed max-w-md mb-7 sm:mb-9 animate-hero-fade-up" style={{ animationDelay: "120ms" }}>
+              <p key={currentSlide.id + "-subtitle"} className="text-sm sm:text-base text-[#0A504A]/75 font-normal leading-relaxed max-w-md mb-7 sm:mb-9 animate-hero-fade-up" style={{ animationDelay: "120ms" }}>
                 {currentSlide.subtitle}
               </p>
 
@@ -247,7 +247,7 @@ export default function FashionHomePage() {
               <div className="mb-8 sm:mb-10">
                 <Link
                   href={currentSlide.buttonLink}
-                  className="group inline-flex items-center gap-2.5 px-7 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-[#C2542D] hover:bg-[#A83D1D] active:scale-95 text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 shadow-md shadow-[#C2542D]/20 hover:shadow-lg hover:shadow-[#C2542D]/35"
+                  className="group inline-flex items-center gap-2.5 px-7 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-[#00A86B] hover:bg-[#0A504A] active:scale-95 text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 shadow-lg shadow-[#00A86B]/25 hover:shadow-xl hover:shadow-[#00A86B]/40"
                 >
                   <span>{currentSlide.buttonText}</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -268,7 +268,7 @@ export default function FashionHomePage() {
                 </div>
 
                 <div className="flex flex-col">
-                  <span className="text-xs sm:text-sm font-bold text-[#18181B] leading-tight">
+                  <span className="text-xs sm:text-sm font-bold text-[#0A504A] leading-tight">
                     20K+ Happy Customers
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
@@ -294,7 +294,7 @@ export default function FashionHomePage() {
                 }}
               />
 
-              {/* Minimalist Olive Leaves Botanical Branch */}
+              {/* Minimalist Emerald Leaves Botanical Branch */}
               <svg
                 className="absolute right-4 sm:right-8 lg:right-12 top-4 sm:top-8 w-24 sm:w-32 lg:w-36 h-auto pointer-events-none opacity-85 z-0"
                 viewBox="0 0 120 220"
@@ -303,17 +303,17 @@ export default function FashionHomePage() {
               >
                 <path
                   d="M30 210 C45 160 55 110 90 20"
-                  stroke="#687864"
+                  stroke="#00A86B"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
-                <path d="M42 175 C30 170 20 180 26 192 C32 195 44 190 42 175Z" fill="#72856E" />
-                <path d="M52 145 C66 142 74 152 68 163 C60 168 50 160 52 145Z" fill="#80937C" />
-                <path d="M56 120 C42 112 34 122 40 134 C46 138 58 132 56 120Z" fill="#72856E" />
-                <path d="M68 90 C82 85 90 95 84 107 C76 112 66 104 68 90Z" fill="#80937C" />
-                <path d="M74 65 C60 58 52 68 58 80 C64 84 76 78 74 65Z" fill="#72856E" />
-                <path d="M85 38 C97 32 105 42 99 53 C91 58 82 50 85 38Z" fill="#80937C" />
-                <path d="M90 20 C92 10 99 12 98 22 C96 28 88 26 90 20Z" fill="#72856E" />
+                <path d="M42 175 C30 170 20 180 26 192 C32 195 44 190 42 175Z" fill="#00A86B" />
+                <path d="M52 145 C66 142 74 152 68 163 C60 168 50 160 52 145Z" fill="#10B981" />
+                <path d="M56 120 C42 112 34 122 40 134 C46 138 58 132 56 120Z" fill="#00A86B" />
+                <path d="M68 90 C82 85 90 95 84 107 C76 112 66 104 68 90Z" fill="#10B981" />
+                <path d="M74 65 C60 58 52 68 58 80 C64 84 76 78 74 65Z" fill="#00A86B" />
+                <path d="M85 38 C97 32 105 42 99 53 C91 58 82 50 85 38Z" fill="#10B981" />
+                <path d="M90 20 C92 10 99 12 98 22 C96 28 88 26 90 20Z" fill="#00A86B" />
               </svg>
 
               {/* Model Image with Soft Bottom Blend & Smooth Fade Transition */}
@@ -341,18 +341,18 @@ export default function FashionHomePage() {
                     <span
                       className={`text-sm sm:text-base font-semibold tracking-wider transition-colors duration-300 ${
                         isActive
-                          ? "text-[#18181B] font-bold"
-                          : "text-gray-400 group-hover:text-gray-700"
+                          ? "text-[#0A504A] font-bold"
+                          : "text-[#0A504A]/40 group-hover:text-[#0A504A]"
                       }`}
                     >
                       {slide.id}
                     </span>
-                    {/* Active terracotta line */}
+                    {/* Active brand green line */}
                     <span
                       className={`block h-[2.5px] rounded-full transition-all duration-300 ${
                         isActive
-                          ? "w-6 bg-[#C2542D] mt-1 opacity-100"
-                          : "w-0 bg-transparent mt-1 opacity-0 group-hover:w-3 group-hover:bg-gray-300 group-hover:opacity-100"
+                          ? "w-6 bg-[#00A86B] mt-1 opacity-100"
+                          : "w-0 bg-transparent mt-1 opacity-0 group-hover:w-3 group-hover:bg-[#D1E7D8] group-hover:opacity-100"
                       }`}
                     />
                   </button>
@@ -370,16 +370,16 @@ export default function FashionHomePage() {
               onClick={() => setActiveSlideIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}
               className="relative h-[3px] rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
-              style={{ width: activeSlideIndex === idx ? "32px" : "10px", backgroundColor: "rgba(0,0,0,0.15)" }}
+              style={{ width: activeSlideIndex === idx ? "32px" : "10px", backgroundColor: "rgba(0,168,107,0.15)" }}
             >
               {activeSlideIndex === idx && !isSliderHovered && (
                 <span
-                  className="absolute inset-y-0 left-0 bg-[#C2542D] rounded-full"
+                  className="absolute inset-y-0 left-0 bg-[#00A86B] rounded-full"
                   style={{ animation: "heroProgressBar 2.8s linear forwards" }}
                 />
               )}
               {activeSlideIndex === idx && (
-                <span className="absolute inset-0 bg-[#C2542D] rounded-full opacity-50" />
+                <span className="absolute inset-0 bg-[#00A86B] rounded-full opacity-50" />
               )}
             </button>
           ))}
@@ -391,16 +391,18 @@ export default function FashionHomePage() {
           4 Columns: Free Shipping, Easy Returns, Secure Payments, 24/7 Support
           ==================================================================== */}
       <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10 mb-8 sm:mb-12">
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 px-6 py-6 sm:px-8 sm:py-7">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x lg:divide-gray-100">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-[#00A86B]/5 border border-[#D1E7D8] px-6 py-6 sm:px-8 sm:py-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x lg:divide-[#E8F8EE]">
             {/* 1. Free Shipping */}
             <div className="flex items-center gap-4 px-2 lg:px-6">
-              <Truck className="w-8 h-8 text-[#C2542D] stroke-[1.75] shrink-0" />
+              <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0 shadow-2xs">
+                <Truck className="w-6 h-6" />
+              </div>
               <div>
-                <h4 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                <h4 className="text-sm sm:text-base font-bold text-[#0A504A] leading-tight">
                   Free Shipping
                 </h4>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+                <p className="text-xs sm:text-sm text-[#0A504A]/70 font-medium mt-0.5">
                   On orders over $79
                 </p>
               </div>
@@ -408,12 +410,14 @@ export default function FashionHomePage() {
 
             {/* 2. Easy Returns */}
             <div className="flex items-center gap-4 px-2 lg:px-6">
-              <RotateCcw className="w-8 h-8 text-[#C2542D] stroke-[1.75] shrink-0" />
+              <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0 shadow-2xs">
+                <RotateCcw className="w-6 h-6" />
+              </div>
               <div>
-                <h4 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                <h4 className="text-sm sm:text-base font-bold text-[#0A504A] leading-tight">
                   Easy Returns
                 </h4>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+                <p className="text-xs sm:text-sm text-[#0A504A]/70 font-medium mt-0.5">
                   Within 30 days
                 </p>
               </div>
@@ -421,12 +425,14 @@ export default function FashionHomePage() {
 
             {/* 3. Secure Payments */}
             <div className="flex items-center gap-4 px-2 lg:px-6">
-              <CreditCard className="w-8 h-8 text-[#C2542D] stroke-[1.75] shrink-0" />
+              <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0 shadow-2xs">
+                <CreditCard className="w-6 h-6" />
+              </div>
               <div>
-                <h4 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                <h4 className="text-sm sm:text-base font-bold text-[#0A504A] leading-tight">
                   Secure Payments
                 </h4>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+                <p className="text-xs sm:text-sm text-[#0A504A]/70 font-medium mt-0.5">
                   100% protected
                 </p>
               </div>
@@ -434,12 +440,14 @@ export default function FashionHomePage() {
 
             {/* 4. 24/7 Support */}
             <div className="flex items-center gap-4 px-2 lg:px-6">
-              <Headphones className="w-8 h-8 text-[#C2542D] stroke-[1.75] shrink-0" />
+              <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0 shadow-2xs">
+                <Headphones className="w-6 h-6" />
+              </div>
               <div>
-                <h4 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                <h4 className="text-sm sm:text-base font-bold text-[#0A504A] leading-tight">
                   24/7 Support
                 </h4>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+                <p className="text-xs sm:text-sm text-[#0A504A]/70 font-medium mt-0.5">
                   We&apos;re here to help
                 </p>
               </div>
@@ -797,52 +805,6 @@ export default function FashionHomePage() {
         )}
       </section>
 
-      {/* ====================================================================
-          6. TRUST & GUARANTEE STRIP (4 Key Pillars)
-          ==================================================================== */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="rounded-3xl bg-white border border-[#D1E7D8] p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 shadow-2xs">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0">
-              <Truck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#0A504A]">Free Shipping</h4>
-              <p className="text-xs text-[#0A504A]/70">On orders over $99</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0">
-              <RotateCcw className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#0A504A]">Easy Returns</h4>
-              <p className="text-xs text-[#0A504A]/70">30-day returns policy</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#0A504A]">Secure Payment</h4>
-              <p className="text-xs text-[#0A504A]/70">100% encrypted & protected</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#E8F8EE] border border-[#D1E7D8] flex items-center justify-center text-[#00A86B] shrink-0">
-              <Headphones className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#0A504A]">24/7 Support</h4>
-              <p className="text-xs text-[#0A504A]/70">Dedicated fashion concierge</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ====================================================================
           7. NEWSLETTER / JOIN OUR STYLE LIST
