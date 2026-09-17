@@ -117,35 +117,33 @@ export interface HeroSlideItem {
   image: string; // <-- Change this image URL to your own image
   alt: string;
   circleBg: string;
-  objectPosition?: string;
 }
 
 const HERO_SLIDES: HeroSlideItem[] = [
   {
     id: "01",
-    tag: "ZEVO KITCHEN & GOURMET MEALS",
-    titleLine1: "Chef-Crafted Meals,",
-    titleLine2: "Family Dining",
-    subtitle: "Explore expert-led meal plans, farm-fresh ingredients, and gourmet meal kits curated for wholesome family living.",
-    buttonText: "EXPLORE MEAL KITS",
-    buttonLink: "/products",
-    image: "/images/hero-slide-1.jpg",
-    alt: "Zevo Kitchen Expert Services and Gourmet Meal Kits",
-    circleBg: "#E8F8EE",
-    objectPosition: "center 20%",
-  },
-  {
-    id: "02",
     tag: "100% ORGANIC & FARM-FRESH",
     titleLine1: "Pure Organic,",
     titleLine2: "Farm-Fresh Daily",
     subtitle: "Handpicked crisp greens, cold-pressed juices, artisan pantry staples, and everyday groceries delivered to your door in minutes.",
     buttonText: "SHOP FRESH HARVEST",
     buttonLink: "/products",
-    image: "/images/hero-slide-2.jpg",
+    image: "https://i.ibb.co.com/mrnVc7Sy/436b0637-8cb8-4df3-bf67-08801e3f74a3.jpg",
     alt: "Pure Organic Farm-Fresh Daily Groceries",
+    circleBg: "#E8F8EE",
+  },
+  {
+    id: "02",
+    tag: "FRESH HARVEST 2024",
+    titleLine1: "Farm-Fresh",
+    titleLine2: "Daily Essentials",
+    subtitle: "Handpicked organic produce, artisan pantry goods, and everyday staples delivered fresh to your door.",
+    buttonText: "EXPLORE NOW",
+    buttonLink: "/products",
+    // SLIDE 2 IMAGE: Replaced with user's uploaded fresh supermarket image
+    image: "https://i.ibb.co.com/m5DF31j3/759dfa81-c4a2-4918-a322-6df9ac1566d9.jpg",
+    alt: "Farm-Fresh Daily Essentials",
     circleBg: "#E5ECE9",
-    objectPosition: "center 15%",
   },
   {
     id: "03",
@@ -155,10 +153,10 @@ const HERO_SLIDES: HeroSlideItem[] = [
     subtitle: "Farm-fresh organic greens, free-range poultry, and sustainable staples curated for your healthy home.",
     buttonText: "EXPLORE NOW",
     buttonLink: "/products",
+    // SLIDE 3 IMAGE: Replaced with user's uploaded fresh market image
     image: "/images/hero-slide-3.png",
     alt: "Wholesome Goodness Delivered Daily",
     circleBg: "#E8EFE9",
-    objectPosition: "center 20%",
   },
 ];
 
@@ -355,7 +353,7 @@ export default function FashionHomePage() {
             <div className="lg:col-span-6 relative flex items-center justify-center min-h-[380px] sm:min-h-[460px] lg:min-h-[520px]">
               {/* Circular Backdrop Disc */}
               <div
-                className="absolute w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] lg:w-[520px] lg:h-[520px] rounded-full"
+                className="absolute w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[460px] lg:h-[460px] rounded-full"
                 style={{
                   backgroundColor: currentSlide.circleBg,
                   transition: "background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1)"
@@ -364,7 +362,7 @@ export default function FashionHomePage() {
 
               {/* Minimalist Emerald Leaves Botanical Branch */}
               <svg
-                className="absolute right-0 sm:right-2 lg:right-4 top-2 sm:top-4 w-24 sm:w-32 lg:w-36 h-auto pointer-events-none opacity-85 z-0"
+                className="absolute right-4 sm:right-8 lg:right-12 top-4 sm:top-8 w-24 sm:w-32 lg:w-36 h-auto pointer-events-none opacity-85 z-0"
                 viewBox="0 0 120 220"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -385,13 +383,12 @@ export default function FashionHomePage() {
               </svg>
 
               {/* Model Image with Soft Bottom Blend & Smooth Fade Transition */}
-              <div className="relative z-10 w-full max-w-[440px] sm:max-w-[500px] lg:max-w-[560px] xl:max-w-[590px] h-[360px] sm:h-[460px] lg:h-[500px] flex items-center justify-center overflow-hidden rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl">
+              <div className="relative z-10 w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] h-[360px] sm:h-[460px] lg:h-[500px] flex items-end justify-center overflow-hidden">
                 <img
                   key={currentSlide.id}
                   src={currentSlide.image}
                   alt={currentSlide.alt}
-                  style={{ objectPosition: currentSlide.objectPosition || "center 20%" }}
-                  className="w-full h-full object-cover select-none pointer-events-none animate-hero-slide-in"
+                  className="max-h-full w-auto object-cover object-top drop-shadow-xl rounded-2xl lg:rounded-3xl select-none pointer-events-none animate-hero-slide-in"
                 />
               </div>
             </div>
@@ -408,21 +405,19 @@ export default function FashionHomePage() {
                     className="group flex flex-col items-center cursor-pointer transition-all duration-300 focus:outline-none py-1 px-2"
                   >
                     <span
-                      className={`text-sm sm:text-base font-semibold tracking-wider transition-colors duration-300 ${
-                        isActive
+                      className={`text-sm sm:text-base font-semibold tracking-wider transition-colors duration-300 ${isActive
                           ? "text-[#0A504A] font-bold"
                           : "text-[#0A504A]/40 group-hover:text-[#0A504A]"
-                      }`}
+                        }`}
                     >
                       {slide.id}
                     </span>
                     {/* Active brand green line */}
                     <span
-                      className={`block h-[2.5px] rounded-full transition-all duration-300 ${
-                        isActive
+                      className={`block h-[2.5px] rounded-full transition-all duration-300 ${isActive
                           ? "w-6 bg-[#00A86B] mt-1 opacity-100"
                           : "w-0 bg-transparent mt-1 opacity-0 group-hover:w-3 group-hover:bg-[#D1E7D8] group-hover:opacity-100"
-                      }`}
+                        }`}
                     />
                   </button>
                 );
@@ -578,8 +573,8 @@ export default function FashionHomePage() {
                   {/* Outer circle container with smooth ring glow (never clips edges) */}
                   <div
                     className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full p-1 border-2 transition-all duration-300 flex items-center justify-center ${cat.isSaleBadge
-                        ? "border-[#0A504A] bg-[#0A504A] text-white shadow-md group-hover:bg-[#00A86B] group-hover:border-[#00A86B] group-hover:ring-4 group-hover:ring-[#00A86B]/25"
-                        : "border-[#D1E7D8] bg-white group-hover:border-[#00A86B] group-hover:ring-4 group-hover:ring-[#00A86B]/25 shadow-2xs"
+                      ? "border-[#0A504A] bg-[#0A504A] text-white shadow-md group-hover:bg-[#00A86B] group-hover:border-[#00A86B] group-hover:ring-4 group-hover:ring-[#00A86B]/25"
+                      : "border-[#D1E7D8] bg-white group-hover:border-[#00A86B] group-hover:ring-4 group-hover:ring-[#00A86B]/25 shadow-2xs"
                       }`}
                   >
                     {cat.isSaleBadge ? (
@@ -842,9 +837,8 @@ export default function FashionHomePage() {
                       title="Add to wishlist"
                     >
                       <Heart
-                        className={`w-4 h-4 transition-colors ${
-                          isFav ? "fill-rose-500 text-rose-500" : "text-[#0A504A] hover:text-rose-500"
-                        }`}
+                        className={`w-4 h-4 transition-colors ${isFav ? "fill-rose-500 text-rose-500" : "text-[#0A504A] hover:text-rose-500"
+                          }`}
                       />
                     </button>
 
@@ -964,8 +958,8 @@ export default function FashionHomePage() {
                     >
                       <Heart
                         className={`w-4 h-4 transition-colors ${isFav
-                            ? "fill-rose-500 text-rose-500"
-                            : "text-[#0A504A] hover:text-rose-500"
+                          ? "fill-rose-500 text-rose-500"
+                          : "text-[#0A504A] hover:text-rose-500"
                           }`}
                       />
                     </button>
