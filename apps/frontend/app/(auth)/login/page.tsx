@@ -8,6 +8,7 @@ import { getMySellerProfile } from "../../../lib/api/sellers";
 import { ZevoLogo } from "../../../components/branding/ZevoLogo";
 import { ZevoLoader } from "../../../components/branding/ZevoLoader";
 import { AuthIllustrationDesk } from "../../../components/auth/AuthIllustrationDesk";
+import { getAccessToken } from "../../../lib/api/client";
 import {
   Lock,
   Mail,
@@ -19,6 +20,7 @@ import {
   Sparkles,
   ShieldCheck,
   Zap,
+  CheckCircle2,
 } from "lucide-react";
 
 function LoginForm() {
@@ -27,7 +29,7 @@ function LoginForm() {
   const redirectParam = searchParams.get("redirect");
   const errorParam = searchParams.get("error");
 
-  const { user, isAuthenticated, isLoading, login } = useAuth();
+  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
@@ -39,29 +41,43 @@ function LoginForm() {
   );
   const [loading, setLoading] = useState(false);
 
-  // Authenticated user guard: If user is already logged in, redirect them away immediately!
+  const token = typeof window !== "undefined" ? getAccessToken() : null;
+
+  // Stale session cleanup: if state in memory says authenticated but token was removed (e.g. by logout in another tab)
   React.useEffect(() => {
-    if (!isLoading && isAuthenticated && user) {
-      if (
-        redirectParam &&
-        redirectParam.startsWith("/") &&
-        !redirectParam.startsWith("/login") &&
-        !redirectParam.startsWith("/register")
-      ) {
-        router.replace(redirectParam);
-      } else if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
-        router.replace("/admin");
-      } else if (user.role === "SUPPORT") {
-        router.replace("/admin/chat");
-      } else if (user.role === "SELLER") {
-        router.replace("/dashboard");
-      } else if (user.role === "DELIVERY_AGENT") {
-        router.replace("/delivery/dashboard");
-      } else {
-        router.replace("/");
-      }
+    if (!isLoading && isAuthenticated && !token) {
+      logout();
     }
-  }, [isLoading, isAuthenticated, user, redirectParam, router]);
+  }, [isLoading, isAuthenticated, token, logout]);
+
+  // Authenticated user guard: If user is already logged in, redirect them to home / dashboard
+  React.useEffect(() => {
+    if (!isLoading && isAuthenticated && user && token) {
+      const timer = setTimeout(() => {
+        if (
+          redirectParam &&
+          redirectParam.startsWith("/") &&
+          !redirectParam.startsWith("/login") &&
+          !redirectParam.startsWith("/register") &&
+          !errorParam
+        ) {
+          router.replace(redirectParam);
+        } else if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+          router.replace("/admin");
+        } else if (user.role === "SUPPORT") {
+          router.replace("/admin/chat");
+        } else if (user.role === "SELLER") {
+          router.replace("/dashboard");
+        } else if (user.role === "DELIVERY_AGENT") {
+          router.replace("/delivery/dashboard");
+        } else {
+          router.replace("/");
+        }
+      }, 700);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, isAuthenticated, user, token, redirectParam, errorParam, router]);
 
   // Quick Demo account auto-fill helper for instant testing
   const handleQuickFill = (demoEmail: string, demoPass: string) => {
@@ -107,8 +123,52 @@ function LoginForm() {
     }
   };
 
-  if (isLoading || (isAuthenticated && user)) {
-    return <ZevoLoader size="responsive" />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F7F7F2]">
+        <ZevoLoader size="responsive" />
+        <p className="text-xs text-[#0A504A]/70 font-semibold mt-4">Checking session...</p>
+      </div>
+    );
+  }
+
+  // Already logged in state: notify user and redirect to home
+  if (isAuthenticated && user && token) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#F7F7F2]">
+        <div className="w-full max-w-md bg-white rounded-3xl border border-[#D1E7D8] p-8 text-center shadow-xl shadow-[#00A86B]/5">
+          <div className="w-16 h-16 rounded-full bg-[#E8F8EE] border border-[#A2E4B8] flex items-center justify-center mx-auto mb-4 text-[#00A86B]">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold font-serif text-[#0A504A] mb-1">
+            Already Signed In
+          </h2>
+          <p className="text-xs text-[#0A504A]/70 mb-4 leading-relaxed">
+            You are currently signed in as <strong className="text-[#0A504A]">{user.first_name ? `${user.first_name} ${user.last_name || ""}` : user.email}</strong> (<span className="text-[#00A86B] font-bold uppercase">{user.role}</span>).
+          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8F8EE] text-[#00A86B] text-xs font-bold mb-6">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <span>Redirecting to Home...</span>
+          </div>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => router.replace("/")}
+              className="flex-1 py-2.5 rounded-xl bg-[#00A86B] hover:bg-[#0A504A] text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+            >
+              Go to Home Now
+            </button>
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 text-xs font-semibold transition-all cursor-pointer"
+            >
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -39,8 +39,12 @@ export default function CustomerOrdersPage() {
         });
         setOrders(res.orders || []);
         setTotal(res.total || 0);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed loading orders", err);
+        if (err?.status === 401 || !getAccessToken()) {
+          router.replace("/login?redirect=/orders");
+          return;
+        }
       } finally {
         setIsLoading(false);
       }

@@ -34,6 +34,8 @@ export function setAccessToken(token: string | null): void {
         localStorage.removeItem("nexora_access_token");
         document.cookie = "zevo_token=; path=/; max-age=0; SameSite=Lax";
         document.cookie = "nexora_token=; path=/; max-age=0; SameSite=Lax";
+        document.cookie = "zevo_role=; path=/; max-age=0; SameSite=Lax";
+        document.cookie = "nexora_role=; path=/; max-age=0; SameSite=Lax";
       } catch (e) {
         // ignore
       }
@@ -42,19 +44,20 @@ export function setAccessToken(token: string | null): void {
 }
 
 export function getAccessToken(): string | null {
-  if (inMemoryAccessToken) return inMemoryAccessToken;
   if (typeof window !== "undefined") {
     try {
       const stored = localStorage.getItem("zevo_access_token") || localStorage.getItem("nexora_access_token");
-      if (stored) {
-        inMemoryAccessToken = stored;
-        return stored;
+      if (!stored) {
+        inMemoryAccessToken = null;
+        return null;
       }
+      inMemoryAccessToken = stored;
+      return stored;
     } catch (e) {
       // ignore
     }
   }
-  return null;
+  return inMemoryAccessToken;
 }
 
 let inMemoryGuestCartId: string | null = null;

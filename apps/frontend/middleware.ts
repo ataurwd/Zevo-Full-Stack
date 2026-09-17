@@ -11,11 +11,13 @@ export function middleware(request: NextRequest) {
   if (pathname === "/login" || pathname === "/register") {
     if (token) {
       const redirectParam = searchParams.get("redirect");
+      const errorParam = searchParams.get("error");
       if (
         redirectParam &&
         redirectParam.startsWith("/") &&
         !redirectParam.startsWith("/login") &&
-        !redirectParam.startsWith("/register")
+        !redirectParam.startsWith("/register") &&
+        !errorParam
       ) {
         return NextResponse.redirect(new URL(redirectParam, request.url));
       }

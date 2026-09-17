@@ -8,6 +8,7 @@ import { registerUser } from "../../../lib/api/auth";
 import { ZevoLogo } from "../../../components/branding/ZevoLogo";
 import { ZevoLoader } from "../../../components/branding/ZevoLoader";
 import { AuthIllustrationEcosystem } from "../../../components/auth/AuthIllustrationEcosystem";
+import { getAccessToken } from "../../../lib/api/client";
 import {
   Lock,
   Mail,
@@ -28,7 +29,7 @@ import {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading, login } = useAuth();
+  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -56,20 +57,81 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const token = typeof window !== "undefined" ? getAccessToken() : null;
+
+  // Stale session cleanup: if state in memory says authenticated but token was removed
+  React.useEffect(() => {
+    if (!isLoading && isAuthenticated && !token) {
+      logout();
+    }
+  }, [isLoading, isAuthenticated, token, logout]);
+
   // Authenticated user guard: Redirect away if already logged in
   React.useEffect(() => {
-    if (!isLoading && isAuthenticated && user) {
-      if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
-        router.replace("/admin");
-      } else if (user.role === "SELLER") {
-        router.replace("/dashboard");
-      } else if (user.role === "DELIVERY_AGENT") {
-        router.replace("/delivery/dashboard");
-      } else {
-        router.replace("/");
-      }
+    if (!isLoading && isAuthenticated && user && token) {
+      const timer = setTimeout(() => {
+        if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+          router.replace("/admin");
+        } else if (user.role === "SELLER") {
+          router.replace("/dashboard");
+        } else if (user.role === "DELIVERY_AGENT") {
+          router.replace("/delivery/dashboard");
+        } else {
+          router.replace("/");
+        }
+      }, 700);
+
+      return () => clearTimeout(timer);
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, isAuthenticated, user, token, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F7F7F2]">
+        <ZevoLoader size="responsive" />
+        <p className="text-xs text-[#0A504A]/70 font-semibold mt-4">Checking session...</p>
+      </div>
+    );
+  }
+
+  // Already logged in state: notify user and redirect to home
+  if (isAuthenticated && user && token) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#F7F7F2]">
+        <div className="w-full max-w-md bg-white rounded-3xl border border-[#D1E7D8] p-8 text-center shadow-xl shadow-[#00A86B]/5">
+          <div className="w-16 h-16 rounded-full bg-[#E8F8EE] border border-[#A2E4B8] flex items-center justify-center mx-auto mb-4 text-[#00A86B]">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold font-serif text-[#0A504A] mb-1">
+            Already Signed In
+          </h2>
+          <p className="text-xs text-[#0A504A]/70 mb-4 leading-relaxed">
+            You already have an active session as <strong className="text-[#0A504A]">{user.first_name ? `${user.first_name} ${user.last_name || ""}` : user.email}</strong> (<span className="text-[#00A86B] font-bold uppercase">{user.role}</span>).
+          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8F8EE] text-[#00A86B] text-xs font-bold mb-6">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <span>Redirecting to Home...</span>
+          </div>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => router.replace("/")}
+              className="flex-1 py-2.5 rounded-xl bg-[#00A86B] hover:bg-[#0A504A] text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+            >
+              Go to Home Now
+            </button>
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 text-xs font-semibold transition-all cursor-pointer"
+            >
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthProvider";
+import { getAccessToken } from "../lib/api/client";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -45,7 +46,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
       auth: {
-        token: typeof window !== "undefined" ? localStorage.getItem("access_token") : undefined,
+        token: (typeof window !== "undefined" ? getAccessToken() : null) || undefined,
       },
     });
 
