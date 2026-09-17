@@ -697,10 +697,10 @@ export default function FashionHomePage() {
         </div>
 
         {isLoadingProducts && products.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
               <div key={i} className="rounded-2xl bg-white border border-[#D1E7D8] overflow-hidden p-3 animate-pulse">
-                <div className="h-56 bg-emerald-100/60 rounded-xl mb-3" />
+                <div className="h-64 bg-emerald-100/60 rounded-xl mb-3" />
                 <div className="h-4 bg-emerald-100/80 rounded w-3/4 mb-2" />
                 <div className="h-3 bg-emerald-100/60 rounded w-1/2 mb-3" />
                 <div className="h-5 bg-emerald-100/80 rounded w-1/3" />
@@ -713,8 +713,8 @@ export default function FashionHomePage() {
             <p className="text-[#0A504A]/70 text-xs mt-1">Visit the admin panel to add products to the database.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
-            {products.slice(0, 6).map((prod) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.slice(0, 8).map((prod) => {
               const isFav = wishlist[prod.id];
               return (
                 <div
