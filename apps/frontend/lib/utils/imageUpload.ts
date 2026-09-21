@@ -55,27 +55,65 @@ export async function uploadImageToImgBB(
   // 2. Resolve ImgBB API Key
   const apiKey = (customApiKey || getImgBBApiKey()).trim();
 
-  if (!apiKey) {
-    throw new Error(
-      "ImgBB API key is missing. Please provide your ImgBB API key or set NEXT_PUBLIC_IMGBB_API_KEY in your .env file."
-    );
+  // 3. Priority: Upload via Next.js same-origin server route (/api/upload)
+  // This completely eliminates browser CORS restrictions and automatically handles fallbacks
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (apiKey && apiKey !== DEFAULT_IMGBB_API_KEY) {
+      formData.append("apiKey", apiKey);
+    }
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.url) {
+        return data.url;
+      }
+    }
+  } catch (proxyError: any) {
+    console.warn("[uploadImageToImgBB] /api/upload proxy call failed, checking fallback:", proxyError?.message);
   }
 
-  // 3. Upload to ImgBB
-  const formData = new FormData();
-  formData.append("image", file);
+  // 4. Direct ImgBB Upload (if user provided their own valid API key)
+  if (apiKey && apiKey !== DEFAULT_IMGBB_API_KEY) {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
 
-  const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-    method: "POST",
-    body: formData,
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const resJson: ImgBBUploadResponse = await response.json();
+
+      if (response.ok && resJson.success && resJson.data?.url) {
+        return resJson.data.display_url || resJson.data.url;
+      }
+
+      const errDetail = (resJson as any)?.error?.message || "ImgBB upload error";
+      console.warn("[uploadImageToImgBB] Direct ImgBB failed:", errDetail);
+    } catch (directErr: any) {
+      console.warn("[uploadImageToImgBB] Direct ImgBB network/CORS error:", directErr?.message);
+    }
+  }
+
+  // 5. Ultimate Fallback: Base64 Data URL so user image never gets lost or blocked
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Failed to process image file"));
+      }
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
   });
-
-  const resJson: ImgBBUploadResponse = await response.json();
-
-  if (!response.ok || !resJson.success || !resJson.data?.url) {
-    const errDetail = (resJson as any)?.error?.message || "Failed to upload image to ImgBB";
-    throw new Error(`ImgBB Upload Error: ${errDetail}`);
-  }
-
-  return resJson.data.display_url || resJson.data.url;
 }

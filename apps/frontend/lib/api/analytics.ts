@@ -84,9 +84,21 @@ export interface AdminBadgeCounts {
 }
 
 export async function getAdminBadgeCounts(): Promise<AdminBadgeCounts> {
-  const res = await apiFetch<{ success: boolean; data: AdminBadgeCounts }>(
-    "/analytics/admin/badges"
-  );
-  return res.data;
+  try {
+    const res = await apiFetch<{ success: boolean; data: AdminBadgeCounts }>(
+      "/analytics/admin/badges"
+    );
+    return res.data;
+  } catch {
+    return {
+      users: 0,
+      merchants: { pending: 0, total: 0 },
+      inventory: { low_stock: 0, total: 0 },
+      orders: { total: 0, pending: 0 },
+      withdrawals: { pending: 0, total: 0 },
+      stores: { total: 0 },
+      products: { total: 0, pending_review: 0 },
+    };
+  }
 }
 

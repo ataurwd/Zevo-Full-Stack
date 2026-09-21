@@ -128,7 +128,7 @@ const HERO_SLIDES: HeroSlideItem[] = [
     subtitle: "Handpicked crisp greens, cold-pressed juices, artisan pantry staples, and everyday groceries delivered to your door in minutes.",
     buttonText: "SHOP FRESH HARVEST",
     buttonLink: "/products",
-    image: "https://i.ibb.co.com/mrnVc7Sy/436b0637-8cb8-4df3-bf67-08801e3f74a3.jpg",
+    image: "/images/hero-slide-1.jpg",
     alt: "Pure Organic Farm-Fresh Daily Groceries",
     circleBg: "#E8F8EE",
   },
@@ -140,8 +140,8 @@ const HERO_SLIDES: HeroSlideItem[] = [
     subtitle: "Handpicked organic produce, artisan pantry goods, and everyday staples delivered fresh to your door.",
     buttonText: "EXPLORE NOW",
     buttonLink: "/products",
-    // SLIDE 2 IMAGE: Replaced with user's uploaded fresh supermarket image
-    image: "https://i.ibb.co.com/m5DF31j3/759dfa81-c4a2-4918-a322-6df9ac1566d9.jpg",
+    // SLIDE 2 IMAGE: Replaced with local image
+    image: "/images/hero-slide-2.jpg",
     alt: "Farm-Fresh Daily Essentials",
     circleBg: "#E5ECE9",
   },

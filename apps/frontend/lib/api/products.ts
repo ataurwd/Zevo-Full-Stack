@@ -226,8 +226,32 @@ export async function adminRejectProduct(id: string, reason: string): Promise<Pr
 }
 
 export async function adminGetProductById(id: string): Promise<ProductItem> {
-  const res = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/admin/${id}`);
-  return res.data;
+  try {
+    const res = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/admin/${id}`);
+    return res.data;
+  } catch (err: any) {
+    console.warn(`[adminGetProductById] Direct /products/admin/${id} failed, attempting fallback to catalog list...`, err?.message);
+    // Fallback: If deployed backend (e.g. Render) doesn't have /products/admin/:id route yet,
+    // look up the product in /products/admin/all (which is supported and deployed on Render)
+    try {
+      const allRes = await apiFetch<{ success: boolean; data: ProductItem[] }>(`/products/admin/all?limit=500`);
+      const items = Array.isArray(allRes.data) ? allRes.data : (allRes as any)?.items || [];
+      const found = items.find((p: any) => (p._id || p.id) === id);
+      if (found) return found;
+    } catch (fallbackErr) {
+      console.warn(`[adminGetProductById] /products/admin/all fallback failed:`, fallbackErr);
+    }
+
+    // Try public detail as secondary fallback
+    try {
+      const pubRes = await apiFetch<{ success: boolean; data: ProductItem }>(`/products/${id}`);
+      if (pubRes.data) return pubRes.data;
+    } catch {
+      // ignore
+    }
+
+    throw err;
+  }
 }
 
 export async function adminCreateProduct(input: any): Promise<ProductItem> {
